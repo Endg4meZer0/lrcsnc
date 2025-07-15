@@ -6,7 +6,6 @@ import (
 	"path"
 
 	"lrcsnc/internal/pkg/structs"
-	"lrcsnc/internal/pkg/types"
 )
 
 type ValidationError struct {
@@ -51,36 +50,24 @@ func Validate(c *structs.Config) (errs ValidationErrors) {
 		})
 	}
 
-	// Check if JSON output type chosen is valid
-	if c.Output.Type == "piped" && (c.Output.Piped.JSON != types.JSONOutputNone &&
-		c.Output.Piped.JSON != types.JSONOutputGeneric &&
-		c.Output.Piped.JSON != types.JSONOutputWaybar) {
-		errs = append(errs, ValidationError{
-			Path:    "output/piped/json",
-			Message: fmt.Sprintf("'%s' is not a valid value. Allowed values are 'none', 'generic' and 'waybar'. Will use 'none' from now.", c.Output.Piped.JSON),
-			Fatal:   false,
-		})
-		c.Output.Piped.JSON = types.JSONOutputNone
-	}
-
 	// Check if the instrumental interval is set to <0.1s
-	if c.Output.Type == "piped" && c.Output.Piped.Instrumental.Interval < 0.1 {
+	if c.Output.Type == "piped" && c.Output.Piped.Format.Instrumental.Interval < 0.1 {
 		errs = append(errs, ValidationError{
 			Path:    "output/piped/instrumental/interval",
-			Message: fmt.Sprintf("'%f' is not a valid value. Using the possible minimum instead (0.1s)", c.Output.Piped.Instrumental.Interval),
+			Message: fmt.Sprintf("'%f' is not a valid value. Using the possible minimum instead (0.1s)", c.Output.Piped.Format.Instrumental.Interval),
 			Fatal:   false,
 		})
-		c.Output.Piped.Instrumental.Interval = 0.1
+		c.Output.Piped.Format.Instrumental.Interval = 0.1
 	}
 
 	// Check if max symbols is less than 1
-	if c.Output.Type == "piped" && c.Output.Piped.Instrumental.MaxSymbols < 1 {
+	if c.Output.Type == "piped" && c.Output.Piped.Format.Instrumental.MaxSymbols < 1 {
 		errs = append(errs, ValidationError{
 			Path:    "output/piped/instrumental/max-symbols",
-			Message: fmt.Sprintf("'%d' is not a valid value. Using the possible minimum instead (1)", c.Output.Piped.Instrumental.MaxSymbols),
+			Message: fmt.Sprintf("'%d' is not a valid value. Using the possible minimum instead (1)", c.Output.Piped.Format.Instrumental.MaxSymbols),
 			Fatal:   false,
 		})
-		c.Output.Piped.Instrumental.MaxSymbols = 1
+		c.Output.Piped.Format.Instrumental.MaxSymbols = 1
 	}
 
 	return

@@ -52,7 +52,7 @@ type RomanizationConfig struct {
 	Korean   bool `toml:"korean"`
 }
 
-// IsEnabled returns true if at least one of the supported romanization options 
+// IsEnabled returns true if at least one of the supported romanization options
 // is turned on.
 func (r *RomanizationConfig) IsEnabled() bool {
 	return r.Japanese || r.Chinese || r.Korean
@@ -80,45 +80,24 @@ func (c *CacheStoreConditionConfig) IsEnabledFor(ls types.LyricsState) bool {
 }
 
 type PipedOutputConfig struct {
-	Destination    string                 `toml:"destination"`
-	JSON           types.JSONOutputType   `toml:"json"`
-	JSONWaybar     JSONWaybarOutputConfig `toml:"json-waybar"`
-	InsertNewline  bool                   `toml:"insert-newline"`
-	Text           FormatOutputConfig     `toml:"text"`
-	Multiplier     FormatOutputConfig     `toml:"multiplier"`
-	Lyric          LyricOutputConfig      `toml:"lyric"`
-	NotPlaying     NotPlayingOutputConfig `toml:"not-playing"`
-	SongNotFound   MessageOutputConfig    `toml:"song-not-found"`
-	NoSyncedLyrics MessageOutputConfig    `toml:"no-synced-lyrics"`
-	LoadingLyrics  MessageOutputConfig    `toml:"loading-lyrics"`
-	ErrorMessage   MessageOutputConfig    `toml:"error-message"`
-	Instrumental   InstrumentalConfig     `toml:"instrumental"`
+	Destination   string             `toml:"destination"`
+	Template      string             `toml:"template"`
+	InsertNewline bool               `toml:"insert-newline"`
+	Format        FormatOutputConfig `toml:"format"`
 }
 
 // LEVEL 3
 
-type JSONWaybarOutputConfig struct {
-	Alt     string `toml:"alt"`
-	Tooltip string `toml:"tooltip"`
-	Class   string `toml:"class"`
-}
-
 type FormatOutputConfig struct {
-	Format string `toml:"format"`
-}
+	Multiplier string `toml:"multiplier"`
 
-type LyricOutputConfig struct {
-	Icon string `toml:"icon"`
-}
-
-type NotPlayingOutputConfig struct {
-	Text string `toml:"text"`
-}
-
-type MessageOutputConfig struct {
-	Enabled bool   `toml:"enabled"`
-	Icon    string `toml:"icon"`
-	Text    string `toml:"text"`
+	Lyric          string             `toml:"lyric"`
+	NotPlaying     string             `toml:"not-playing"`
+	NoLyrics       string             `toml:"no-lyrics"`
+	NoSyncedLyrics string             `toml:"no-synced-lyrics"`
+	LoadingLyrics  string             `toml:"loading-lyrics"`
+	ErrorMessage   string             `toml:"error-message"`
+	Instrumental   InstrumentalConfig `toml:"instrumental"`
 }
 
 type InstrumentalConfig struct {

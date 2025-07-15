@@ -125,7 +125,6 @@ func parseSyncedLyrics(lyrics string) (out []structs.Lyric) {
 }
 
 // A simple sanitize requires trimming any carriage return and space symbols
-// It is wrapped into a function to be simple to update if needed
 func sanitizeLyric(lyric string) string {
 	return strings.TrimSpace(strings.TrimRight(lyric, "\r"))
 }

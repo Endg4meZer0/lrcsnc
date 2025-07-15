@@ -52,6 +52,7 @@ func Read(path string) error {
 		global.Config.C = config
 		global.Config.Path = path
 		global.Config.M.Unlock()
+		postRead()
 		log.Info("config/Read", "Config file loaded successfully.")
 	} else {
 		log.Error("config/Read", "Fatal errors in the config were detected during validation.")
@@ -87,4 +88,20 @@ func Update() {
 			log.Error("config/Update", "Unknown error: "+err.Error())
 		}
 	}
+}
+
+func postRead() {
+	global.Config.M.Lock()
+
+	// Trim piped output template and formats
+	global.Config.C.Output.Piped.Template = strings.TrimSpace(global.Config.C.Output.Piped.Template)
+	global.Config.C.Output.Piped.Format.Lyric = strings.TrimSpace(global.Config.C.Output.Piped.Format.Lyric)
+	global.Config.C.Output.Piped.Format.Multiplier = strings.TrimSpace(global.Config.C.Output.Piped.Format.Multiplier)
+	global.Config.C.Output.Piped.Format.NotPlaying = strings.TrimSpace(global.Config.C.Output.Piped.Format.NotPlaying)
+	global.Config.C.Output.Piped.Format.NoLyrics = strings.TrimSpace(global.Config.C.Output.Piped.Format.NoLyrics)
+	global.Config.C.Output.Piped.Format.NoSyncedLyrics = strings.TrimSpace(global.Config.C.Output.Piped.Format.NoSyncedLyrics)
+	global.Config.C.Output.Piped.Format.LoadingLyrics = strings.TrimSpace(global.Config.C.Output.Piped.Format.LoadingLyrics)
+	global.Config.C.Output.Piped.Format.ErrorMessage = strings.TrimSpace(global.Config.C.Output.Piped.Format.ErrorMessage)
+
+	global.Config.M.Unlock()
 }

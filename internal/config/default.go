@@ -46,6 +46,7 @@ func ReadDefault() error {
 		global.Config.C = config
 		global.Config.Path = "default"
 		global.Config.M.Unlock()
+		postRead()
 		log.Info("config/ReadDefault", "Default config loaded successfully.")
 	} else {
 		log.Error("config/ReadDefault", "Fatal errors in the default config were detected during validation. How? Idk.")

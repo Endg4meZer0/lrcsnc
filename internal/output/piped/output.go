@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"lrcsnc/internal/output/piped/json"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
 	"lrcsnc/internal/pkg/types"
@@ -76,8 +75,8 @@ func Init() {
 			global.Config.M.Lock()
 			global.Player.M.Lock()
 
-			note := global.Config.C.Output.Piped.Instrumental.Symbol
-			j := int(global.Config.C.Output.Piped.Instrumental.MaxSymbols + 1)
+			note := global.Config.C.Output.Piped.Format.Instrumental.Symbol
+			j := int(global.Config.C.Output.Piped.Format.Instrumental.MaxSymbols + 1)
 
 			// Only update instrumental stuff if there is an active song
 			if global.Player.P.PlaybackStatus != mprislib.PlaybackStopped {
@@ -85,15 +84,15 @@ func Init() {
 
 				switch global.Player.P.Song.LyricsData.LyricsState {
 				case types.LyricsStateSynced, types.LyricsStateInstrumental:
-					stringToPrint = getInstrumentalString(global.Config.C.Output.Piped.Lyric, global.Config.C.Output.Piped.Text.Format)
+					stringToPrint = strings.NewReplacer("{lyric}", "", "{multiplier}", "").Replace(global.Config.C.Output.Piped.Format.Lyric)
 				case types.LyricsStatePlain:
-					stringToPrint = getInstrumentalMessage(global.Config.C.Output.Piped.NoSyncedLyrics, global.Config.C.Output.Piped.Text.Format)
+					stringToPrint = global.Config.C.Output.Piped.Format.NoSyncedLyrics
 				case types.LyricsStateNotFound:
-					stringToPrint = getInstrumentalMessage(global.Config.C.Output.Piped.SongNotFound, global.Config.C.Output.Piped.Text.Format)
+					stringToPrint = global.Config.C.Output.Piped.Format.NoLyrics
 				case types.LyricsStateLoading:
-					stringToPrint = getInstrumentalMessage(global.Config.C.Output.Piped.LoadingLyrics, global.Config.C.Output.Piped.Text.Format)
+					stringToPrint = global.Config.C.Output.Piped.Format.LoadingLyrics
 				default:
-					stringToPrint = getInstrumentalMessage(global.Config.C.Output.Piped.ErrorMessage, global.Config.C.Output.Piped.Text.Format)
+					stringToPrint = global.Config.C.Output.Piped.Format.ErrorMessage
 				}
 
 				if len(stringToPrint) != 0 {
@@ -109,12 +108,12 @@ func Init() {
 				}
 
 				if global.Player.P.PlaybackStatus == mprislib.PlaybackPlaying {
-					instrumentalTimer.Reset(time.Duration(global.Config.C.Output.Piped.Instrumental.Interval*1000) * time.Millisecond)
+					instrumentalTimer.Reset(time.Duration(global.Config.C.Output.Piped.Format.Instrumental.Interval*1000) * time.Millisecond)
 				} else {
 					instrumentalTimer.Stop()
 				}
 			} else {
-				writeChan <- strings.TrimSpace(global.Config.C.Output.Piped.NotPlaying.Text)
+				writeChan <- global.Config.C.Output.Piped.Format.NotPlaying
 				instrumentalTimer.Stop()
 			}
 			global.Player.M.Unlock()
@@ -130,9 +129,7 @@ func Init() {
 func Write(s string) {
 	global.Config.M.Lock()
 	global.Player.M.Lock()
-	if global.Config.C.Output.Piped.JSON != types.JSONOutputNone {
-		s = json.FormatToJSON(s)
-	}
+	s = FormatToTemplate(s)
 	if global.Config.C.Output.Piped.InsertNewline {
 		s = s + "\n"
 	}
@@ -170,7 +167,7 @@ func FormatLyric(lyricIndex int) string {
 	defer global.Player.M.Unlock()
 
 	lyric := lyricIndexToString(lyricIndex, global.Player.P.Song.LyricsData.Lyrics)
-	if strings.TrimSpace(lyric) == "" {
+	if lyric == "" {
 		return ""
 	}
 
@@ -180,14 +177,13 @@ func FormatLyric(lyricIndex int) string {
 	}
 	multiplier := ""
 	if multiplierValue > 1 {
-		multiplier = strings.ReplaceAll(global.Config.C.Output.Piped.Multiplier.Format, "{value}", strconv.Itoa(multiplierValue))
+		multiplier = strings.ReplaceAll(global.Config.C.Output.Piped.Format.Multiplier, "{value}", strconv.Itoa(multiplierValue))
 	}
 	replacer := strings.NewReplacer(
-		"{icon}", global.Config.C.Output.Piped.Lyric.Icon,
 		"{lyric}", lyric,
 		"{multiplier}", multiplier,
 	)
-	return strings.TrimSpace(replacer.Replace(global.Config.C.Output.Piped.Text.Format))
+	return replacer.Replace(global.Config.C.Output.Piped.Format.Lyric)
 }
 
 // Overwrite sets the overwrite string to be displayed.
@@ -213,7 +209,7 @@ func overwriteEnds() {
 func changeOutput(p string) error {
 	newDest, err := os.OpenFile(p, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
-		log.Error("output/piped", "Error opening new output destination file, ignoring. More: "+err.Error())
+		log.Error("output/piped", "Error opening new output destination file, falling back to stdout. More: "+err.Error())
 		return err
 	} else {
 		r := strings.NewReplacer(
@@ -223,7 +219,7 @@ func changeOutput(p string) error {
 		// We'll try to open temp file here to see if it even works
 		_, err := os.OpenFile(tempFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 		if err != nil {
-			log.Error("output/piped", fmt.Sprintf("Failed to open a temp write file (%s). The writes will not be atomic.", tempFile))
+			log.Error("output/piped", fmt.Sprintf("Failed to open a temp write file (%s). The writes may not be atomic.", tempFile))
 		}
 
 		outputDestination = newDest

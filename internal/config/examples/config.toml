@@ -29,47 +29,19 @@ type = "piped"
 
 [output.piped]
 destination = "stdout"
-json = "none"
+template = "{text}"
 insert-newline = true
 
-[output.piped.json-waybar]
-alt = ""
-tooltip = "{artists} - {title} - {album}"
-class = "{playback-status} {lyrics-status}"
+[output.piped.format]
+lyric = "{lyric}{multiplier}"
+multiplier = " (x{value})"
+not-playing = " Nothing is playing"
+no-lyrics = "⨯ No lyrics!"
+no-synced-lyrics = "󰦨 No synced lyrics!"
+loading-lyrics = "󱥸 Loading..."
+error-message = " An error occured! Check logs for info!"
 
-[output.piped.text]
-format = "{icon} {lyric} {multiplier}"
-
-[output.piped.multiplier]
-format = "(x{value})"
-
-[output.piped.lyric]
-icon = "♫"
-
-[output.piped.not-playing]
-text = " Nothing is playing"
-
-[output.piped.song-not-found]
-enabled = true
-icon = "⨯"
-text = "Song not found!"
-
-[output.piped.no-synced-lyrics]
-enabled = true
-icon = "󰦨"
-text = "Lyrics are not synced!"
-
-[output.piped.loading-lyrics]
-enabled = true
-icon = "󱥸"
-text = "Loading..."
-
-[output.piped.error-message]
-enabled = true
-icon = ""
-text = "An error occured! Check logs for info!"
-
-[output.piped.instrumental]
+[output.piped.format.instrumental]
 interval = 0.66
-symbol = "♪"
+symbol = "󰎇"
 max-symbols = 3
