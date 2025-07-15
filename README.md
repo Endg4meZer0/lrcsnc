@@ -12,6 +12,14 @@ https://github.com/user-attachments/assets/1bc93e59-385f-41cb-a23e-49298e5887b0
 - A decent level of customization and configuration using TOML
 - (Almost) full integration to Waybar
 
+## Install
+lrcsnc is availabe at AUR!
+```
+yay -S lrcsnc
+```
+
+Also you can build it from source (see below)
+
 ## Build
 ```
 git clone https://github.com/Endg4meZer0/lrcsnc.git
