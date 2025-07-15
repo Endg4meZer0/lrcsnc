@@ -32,7 +32,7 @@ func Fetch() (structs.LyricsData, error) {
 		}
 	}
 
-	log.Debug("lyrics/fetch", fmt.Sprintf("Moving online; using %v", global.Config.C.Lyrics.Provider))
+	log.Debug("lyrics/fetch", fmt.Sprintf("Moving to the online part; using %v", global.Config.C.Lyrics.Provider))
 
 	res, err := providers.Providers[global.Config.C.Lyrics.Provider].Get(song)
 	if err != nil {
@@ -47,7 +47,7 @@ func Fetch() (structs.LyricsData, error) {
 
 	log.Debug("lyrics/fetch", "Lyrics were successfully fetched from online")
 
-	if global.Config.C.Cache.Enabled && res.LyricsState.ToCacheStoreCondition()&global.Config.C.Cache.StoreCondition != 0 {
+	if global.Config.C.Cache.Enabled && global.Config.C.Cache.StoreCondition.IsEnabledFor(res.LyricsState) {
 		song.LyricsData = res
 		cache.Store(&song)
 	}

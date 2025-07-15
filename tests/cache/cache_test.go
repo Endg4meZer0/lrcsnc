@@ -9,6 +9,7 @@ import (
 )
 
 func TestStoreGetCycle(t *testing.T) {
+	global.Config.C.Cache.StoreCondition.IfSynced = true
 	global.Config.C.Cache.Dir = "$HOME/.cache/lrcsnc"
 	testSong := structs.Song{
 		Title:    "Is This A Test?",
@@ -22,6 +23,10 @@ func TestStoreGetCycle(t *testing.T) {
 			},
 			LyricsState: types.LyricsStateSynced,
 		},
+	}
+	canStore := global.Config.C.Cache.StoreCondition.IsEnabledFor(testSong.LyricsData.LyricsState)
+	if canStore == false {
+		t.Error("[tests/cache/TestStoreGetCycle] ERROR: Failed to store lyrics in cache: store conditions are not working properly.")
 	}
 	err := cache.Store(&testSong)
 	if err != nil {

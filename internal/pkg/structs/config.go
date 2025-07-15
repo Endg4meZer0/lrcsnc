@@ -33,10 +33,10 @@ type LyricsConfig struct {
 }
 
 type CacheConfig struct {
-	Enabled        bool                          `toml:"enabled"`
-	Dir            string                        `toml:"dir"`
-	LifeSpan       uint                          `toml:"life-span"`
-	StoreCondition types.CacheStoreConditionType `toml:"store-condition"`
+	Enabled        bool                      `toml:"enabled"`
+	Dir            string                    `toml:"dir"`
+	LifeSpan       uint                      `toml:"life-span"`
+	StoreCondition CacheStoreConditionConfig `toml:"store-condition"`
 }
 
 type OutputConfig struct {
@@ -52,8 +52,31 @@ type RomanizationConfig struct {
 	Korean   bool `toml:"korean"`
 }
 
+// IsEnabled returns true if at least one of the supported romanization options 
+// is turned on.
 func (r *RomanizationConfig) IsEnabled() bool {
 	return r.Japanese || r.Chinese || r.Korean
+}
+
+type CacheStoreConditionConfig struct {
+	IfSynced       bool `toml:"if-synced"`       // LyricsState.Synced
+	IfPlain        bool `toml:"if-plain"`        // LyricsState.Plain
+	IfInstrumental bool `toml:"if-instrumental"` // LyricsState.Instrumental
+}
+
+// IsEnabledFor returns true for a LyricsState `ls`,
+// if the option, corresponding to it, is enabled. Otherwise, returns false.
+func (c *CacheStoreConditionConfig) IsEnabledFor(ls types.LyricsState) bool {
+	switch ls {
+	case types.LyricsStateSynced:
+		return c.IfSynced
+	case types.LyricsStatePlain:
+		return c.IfPlain
+	case types.LyricsStateInstrumental:
+		return c.IfInstrumental
+	default:
+		return false
+	}
 }
 
 type PipedOutputConfig struct {

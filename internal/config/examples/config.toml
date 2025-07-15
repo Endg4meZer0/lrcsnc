@@ -18,7 +18,11 @@ korean = true
 enabled = true
 dir = "$HOME/.cache/lrcsnc"
 life-span = 168
-store-condition = 100
+
+[cache.store-condition]
+if-synced = true
+if-plain = false
+if-instrumental = true
 
 [output]
 type = "piped"
