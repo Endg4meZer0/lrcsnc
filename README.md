@@ -39,9 +39,9 @@ Get more info on on available options with `lrcsnc -h`.
 ## TODO
 - [ ] Check [compatibility](https://github.com/Endg4meZer0/lrcsnc/wiki/Compatibility-with-players) with different players
 - [ ] More lyrics providers
-- [ ] Terminal User Interface
 - [ ] More configuration options?
 - [ ] There is definitely always more!
+- [ ] ~~Terminal User Interface~~ will not be planned for near future, at least until there's somebody interested in it.
 
 ## Need help or want to contribute?
 You can always make an issue for either a bug or a feature suggestment! If your question is more general, consider opening a discussion.
