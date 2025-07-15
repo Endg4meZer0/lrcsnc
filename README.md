@@ -8,12 +8,13 @@ https://github.com/user-attachments/assets/1bc93e59-385f-41cb-a23e-49298e5887b0
 ## Features
 
 - Syncing to any player that supports MPRIS
-- Romanization for Japanese, Chinese and Korean languages
+- Can fit into any bar!
 - A decent level of customization and configuration using TOML
-- (Almost) full integration to Waybar
+- Romanization for Japanese, Chinese and Korean languages
+- ...and more!
 
 ## Install
-lrcsnc is availabe at AUR!
+lrcsnc is available at AUR!
 ```
 yay -S lrcsnc
 ```
@@ -45,5 +46,5 @@ Get more info on on available options with `lrcsnc -h`.
 ## Need help or want to contribute?
 You can always make an issue for either a bug or a feature suggestment! If your question is more general, consider opening a discussion.
 
-## Your song was not found?
-Consider adding the lyrics for it! Currently lrcsnc uses *LrcLib*, which is a great open-source lyrics provider service that has its own easy-to-use [app](https://github.com/tranxuanthang/lrcget) to download or upload lyrics. Once the lyrics are uploaded, lrcsnc should be able to pick them up on the next play of the song (that is if the cached version is not available though).
+## Your favorite song's lyrics were not found?
+Consider adding them! Currently lrcsnc uses *LrcLib*, which is a great open-source lyrics provider service that has its own easy-to-use [app](https://github.com/tranxuanthang/lrcget) to download or upload lyrics. Once the lyrics are uploaded, lrcsnc should be able to pick them up on the next play of the song (that is if the cached version is not available though).
