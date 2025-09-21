@@ -66,18 +66,16 @@ func Setup() {
 		log.Init()
 	}
 
-	// Try to read config from the provided path
+	// Try to read config from the provided path.
+	// Failing should crash the app.
 	if opts.ConfigPath != "" {
 		log.Info("setup", fmt.Sprintf("Trying to read config from the provided path (%v)...", opts.ConfigPath))
 		err = config.Read(opts.ConfigPath)
 		if err != nil {
-			log.Info("setup", fmt.Sprintf("The provided config path (%v) will be ignored.", opts.ConfigPath))
+			log.Fatal("setup", fmt.Sprintf("The provided config from path %v failed to load; the launch will not continue. Check logs for more information.", opts.ConfigPath))
 		}
-	}
-
-	// If the config path flag is not set or the provided config failed to load,
-	// try to read other configs
-	if opts.ConfigPath == "" || err != nil {
+	} else {
+		// If the config path flag is not set, try to read other configs
 		log.Info("setup", "Trying to read user-wide config...")
 		if err := config.ReadUserWide(); err != nil {
 			log.Info("setup", "The user-wide config will be ignored.")
@@ -86,7 +84,7 @@ func Setup() {
 				log.Info("setup", "The system-wide config will be ignored.")
 				log.Info("setup", "Will be using the default config.")
 				if err := config.ReadDefault(); err != nil {
-					log.Fatal("setup", "The default config is invalid. Now I definitely cannot continue.")
+					log.Fatal("setup", "The default config is invalid; the launch will not continue.")
 				}
 			}
 		}
