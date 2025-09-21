@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"lrcsnc/internal/output"
 	errs "lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
@@ -13,25 +14,14 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
-func Read(path string) error {
-	if _, err := os.Stat(os.ExpandEnv(path)); os.IsNotExist(err) {
-		log.Error("config/Read", "Config file does not exist or is unreachable.")
-		return errs.ErrFileUnreachable
-	}
-
-	configFile, err := os.ReadFile(os.ExpandEnv(path))
-	if err != nil {
-		log.Error("config/Read", "Config file is reachable, but unreadable.")
-		return errs.ErrFileUnreadable
-	}
-
+func Parse(configFile []byte) error {
 	var config structs.Config
 
 	if err := toml.Unmarshal(configFile, &config); err != nil {
 		var decodeErr *toml.DecodeError
 		if errors.As(err, &decodeErr) {
 			lines := strings.Join(strings.Split(decodeErr.String(), "\n"), "\n\t")
-			log.Error("config/Read", "Error parsing the config file: \n\t"+lines)
+			log.Error("config/Parse", "Error parsing the config file: \n\t"+lines)
 			return errs.ErrConfigFileInvalid
 		}
 	}
@@ -47,17 +37,40 @@ func Read(path string) error {
 		}
 	}
 
-	if !fatal {
-		global.Config.M.Lock()
-		global.Config.C = config
-		global.Config.Path = path
-		global.Config.M.Unlock()
-		postRead()
-		log.Info("config/Read", "Config file loaded successfully.")
-	} else {
-		log.Error("config/Read", "Fatal errors in the config were detected during validation.")
+	if fatal {
+		log.Error("config/Parse", "Fatal errors in the config were detected during validation.")
 		return errs.ErrConfigFatalValidation
 	}
+
+	global.Config.M.Lock()
+	global.Config.C = config
+	global.Config.M.Unlock()
+	postParse()
+	log.Info("config/Parse", "Config file loaded successfully.")
+
+	return nil
+}
+
+func Read(path string) error {
+	if _, err := os.Stat(os.ExpandEnv(path)); os.IsNotExist(err) {
+		log.Error("config/Read", "Config file does not exist or is unreachable.")
+		return errs.ErrFileUnreachable
+	}
+
+	configFile, err := os.ReadFile(os.ExpandEnv(path))
+	if err != nil {
+		log.Error("config/Read", "Config file is reachable, but unreadable.")
+		return errs.ErrFileUnreadable
+	}
+
+	err = Parse(configFile)
+	if err != nil {
+		return err
+	}
+
+	global.Config.M.Lock()
+	global.Config.Path = path
+	global.Config.M.Unlock()
 
 	return nil
 }
@@ -87,10 +100,12 @@ func Update() {
 		default:
 			log.Error("config/Update", "Unknown error: "+err.Error())
 		}
+	} else {
+		output.Controllers[global.Config.C.Output.Type].OnConfigUpdate()
 	}
 }
 
-func postRead() {
+func postParse() {
 	global.Config.M.Lock()
 
 	// Trim piped output template and formats
