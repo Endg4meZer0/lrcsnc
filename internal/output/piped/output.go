@@ -29,6 +29,7 @@ func outputIsStd() bool {
 var writeChan = make(chan string, 1)
 var overwrite = ""
 var pendingLyricIndex = -1
+var currentLyricIndex = -1
 var instrumentalTimer *time.Timer = time.NewTimer(5 * time.Minute)
 
 // Init initializes... basically everything.
@@ -52,12 +53,12 @@ func Init() {
 	// Initialize lyric change listener
 	go func() {
 		for {
-			lyricIndex := <-currentLyricChangedChan
+			currentLyricIndex = <-currentLyricChangedChan
 			if overwrite != "" {
-				pendingLyricIndex = lyricIndex
+				pendingLyricIndex = currentLyricIndex
 				continue
 			}
-			lyric := FormatLyric(lyricIndex)
+			lyric := FormatLyric(currentLyricIndex)
 			if lyric == "" {
 				instrumentalTimer.Reset(1)
 			} else {

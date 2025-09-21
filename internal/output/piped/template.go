@@ -6,11 +6,16 @@ import (
 	"strings"
 )
 
-func FormatToTemplate(text string) string {
+// FormatToTemplate formats the output to the Template configuration option.
+// Does NOT lock player's mutex, so make sure it is locked beforehand.
+//
+// text - the outcoming text meant for display (e.g. lyric or error message)
+func FormatToTemplate(text string) (out string) {
 	var artist string
 	if len(global.Player.P.Song.Artists) > 0 {
 		artist = global.Player.P.Song.Artists[0]
 	}
+
 	formatReplacer := strings.NewReplacer(
 		"{text}", text,
 		"{artist}", artist,
