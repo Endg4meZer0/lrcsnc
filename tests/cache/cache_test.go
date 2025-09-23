@@ -18,8 +18,8 @@ func TestStoreGetCycle(t *testing.T) {
 		Duration: 12.12,
 		LyricsData: structs.LyricsData{
 			Lyrics: []structs.Lyric{
-				{Time: 4.12, Text: "Pam-pam-pampararam"},
-				{Time: 7.54, Text: "Pam-pam-pam-param-pamparam"},
+				{Timing: 4.12, Text: "Pam-pam-pampararam"},
+				{Timing: 7.54, Text: "Pam-pam-pam-param-pamparam"},
 			},
 			LyricsState: types.LyricsStateSynced,
 		},

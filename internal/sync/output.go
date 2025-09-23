@@ -13,7 +13,7 @@ import (
 
 var lyricsTimer = time.NewTimer(5 * time.Minute)
 var lyricIndex = -1
-var writtenTimestamp float64
+var writtenTiming float64
 
 func resyncLyrics() {
 	lyricsTimer.Reset(1)
@@ -38,30 +38,30 @@ func lyricsSynchronizer() {
 			output.Controllers[global.Config.C.Output.Type].DisplayLyric(-1)
 		} else {
 			// 5999.99s is basically the maximum limit of .lrc files' timestamps AFAIK, so 6000s is unreachable
-			currentLyricTimestamp := -1.0
-			nextLyricTimestamp := 6000.0
+			currentLyricTiming := -1.0
+			nextLyricTiming := 6000.0
 			newLyricIndex := -1
 
 			for i, lyric := range global.Player.P.Song.LyricsData.Lyrics {
-				if lyric.Time+global.Config.C.Lyrics.TimestampOffset <= global.Player.P.Position && currentLyricTimestamp <= lyric.Time+global.Config.C.Lyrics.TimestampOffset {
-					currentLyricTimestamp = lyric.Time + global.Config.C.Lyrics.TimestampOffset
+				if lyric.Timing+global.Config.C.Lyrics.TimingOffset <= global.Player.P.Position && currentLyricTiming <= lyric.Timing+global.Config.C.Lyrics.TimingOffset {
+					currentLyricTiming = lyric.Timing + global.Config.C.Lyrics.TimingOffset
 					newLyricIndex = i
 				}
 			}
 
 			if newLyricIndex != len(global.Player.P.Song.LyricsData.Lyrics)-1 {
-				nextLyricTimestamp = global.Player.P.Song.LyricsData.Lyrics[newLyricIndex+1].Time + global.Config.C.Lyrics.TimestampOffset
+				nextLyricTiming = global.Player.P.Song.LyricsData.Lyrics[newLyricIndex+1].Timing + global.Config.C.Lyrics.TimingOffset
 			}
 
-			lyricsTimerDuration := time.Duration(int64(math.Abs(nextLyricTimestamp-global.Player.P.Position)*1000)) * time.Millisecond
+			lyricsTimerDuration := time.Duration(int64(math.Abs(nextLyricTiming-global.Player.P.Position)*1000)) * time.Millisecond
 
-			if currentLyricTimestamp == -1 || (global.Player.P.PlaybackStatus == mpris.PlaybackPlaying && writtenTimestamp != currentLyricTimestamp) {
+			if currentLyricTiming == -1 || (global.Player.P.PlaybackStatus == mpris.PlaybackPlaying && writtenTiming != currentLyricTiming) {
 				output.Controllers[global.Config.C.Output.Type].DisplayLyric(newLyricIndex)
 			}
 
 			lyricIndex = newLyricIndex
-			writtenTimestamp = currentLyricTimestamp
-			global.Player.P.Position = nextLyricTimestamp
+			writtenTiming = currentLyricTiming
+			global.Player.P.Position = nextLyricTiming
 			lyricsTimer.Reset(lyricsTimerDuration)
 		}
 	}

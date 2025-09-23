@@ -14,7 +14,7 @@ import (
 	"lrcsnc/internal/pkg/types"
 )
 
-var timeTagRegexp = regexp.MustCompile(`(\[[0-9]{2}:[0-9]{2}.[0-9]{2}])+`)
+var timingRegexp = regexp.MustCompile(`(\[[0-9]{2}:[0-9]{2}.[0-9]{2}])+`)
 
 type DTO struct {
 	Title        string  `json:"trackName"`
@@ -94,22 +94,22 @@ func parseSyncedLyrics(lyrics string) (out []structs.Lyric) {
 	out = make([]structs.Lyric, 0, len(syncedLyrics))
 
 	for _, lyric := range syncedLyrics {
-		timeTags := timeTagRegexp.FindAllString(lyric, -1)
+		timings := timingRegexp.FindAllString(lyric, -1)
 
-		for _, ts := range timeTags {
+		for _, ts := range timings {
 			lyric = strings.Replace(lyric, ts, "", 1)
 		}
 		lyric = sanitizeLyric(lyric)
 
-		hasRepetitiveLyrics = hasRepetitiveLyrics || len(timeTags) > 1
+		hasRepetitiveLyrics = hasRepetitiveLyrics || len(timings) > 1
 
-		for _, timeTagStr := range timeTags {
-			timecode := parseTimeTag(timeTagStr)
-			if timecode == -1 {
+		for _, timingStr := range timings {
+			timing := parseTiming(timingStr)
+			if timing == -1 {
 				continue
 			}
 			out = append(out, structs.Lyric{
-				Time: timecode,
+				Time: timing,
 				Text: lyric,
 			})
 		}
@@ -130,7 +130,7 @@ func sanitizeLyric(lyric string) string {
 }
 
 // Returns the timestamp in seconds, specified in the provided timeTag
-func parseTimeTag(timeTag string) float64 {
+func parseTiming(timeTag string) float64 {
 	// [01:23.45]
 	if len(timeTag) != 10 {
 		return -1

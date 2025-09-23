@@ -27,9 +27,9 @@ type PlayerConfig struct {
 }
 
 type LyricsConfig struct {
-	Provider        types.LyricsProviderType `toml:"provider"`
-	TimestampOffset float64                  `toml:"timestamp-offset"`
-	Romanization    RomanizationConfig       `toml:"romanization"`
+	Provider     types.LyricsProviderType `toml:"provider"`
+	TimingOffset float64                  `toml:"timing-offset"`
+	Romanization RomanizationConfig       `toml:"romanization"`
 }
 
 type CacheConfig struct {

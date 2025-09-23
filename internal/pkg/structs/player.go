@@ -31,7 +31,7 @@ type LyricsData struct {
 }
 
 type Lyric struct {
-	Time float64
+	Timing float64
 	Text string
 }
 

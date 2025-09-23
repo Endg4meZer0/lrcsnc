@@ -7,7 +7,7 @@ excluded-players = []
 
 [lyrics]
 provider = "lrclib"
-timestamp-offset = 0.0
+timing-offset = 0.0
 
 [lyrics.romanization]
 japanese = true
