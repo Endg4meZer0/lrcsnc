@@ -45,7 +45,6 @@ func Parse(configFile []byte) error {
 	global.Config.M.Lock()
 	global.Config.C = config
 	global.Config.M.Unlock()
-	postParse()
 	log.Info("config/Parse", "Config file loaded successfully.")
 
 	return nil
@@ -103,20 +102,4 @@ func Update() {
 	} else {
 		output.Controllers[global.Config.C.Output.Type].OnConfigUpdate()
 	}
-}
-
-func postParse() {
-	global.Config.M.Lock()
-
-	// Trim piped output template and formats
-	global.Config.C.Output.Piped.Template = strings.TrimSpace(global.Config.C.Output.Piped.Template)
-	global.Config.C.Output.Piped.Format.Lyric = strings.TrimSpace(global.Config.C.Output.Piped.Format.Lyric)
-	global.Config.C.Output.Piped.Format.Multiplier = strings.TrimSpace(global.Config.C.Output.Piped.Format.Multiplier)
-	global.Config.C.Output.Piped.Format.NotPlaying = strings.TrimSpace(global.Config.C.Output.Piped.Format.NotPlaying)
-	global.Config.C.Output.Piped.Format.NoLyrics = strings.TrimSpace(global.Config.C.Output.Piped.Format.NoLyrics)
-	global.Config.C.Output.Piped.Format.NoSyncedLyrics = strings.TrimSpace(global.Config.C.Output.Piped.Format.NoSyncedLyrics)
-	global.Config.C.Output.Piped.Format.LoadingLyrics = strings.TrimSpace(global.Config.C.Output.Piped.Format.LoadingLyrics)
-	global.Config.C.Output.Piped.Format.ErrorMessage = strings.TrimSpace(global.Config.C.Output.Piped.Format.ErrorMessage)
-
-	global.Config.M.Unlock()
 }
