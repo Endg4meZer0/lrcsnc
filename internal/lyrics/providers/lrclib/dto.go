@@ -109,15 +109,15 @@ func parseSyncedLyrics(lyrics string) (out []structs.Lyric) {
 				continue
 			}
 			out = append(out, structs.Lyric{
-				Time: timing,
-				Text: lyric,
+				Timing: timing,
+				Text:   lyric,
 			})
 		}
 	}
 
 	if hasRepetitiveLyrics {
 		slices.SortFunc(out, func(i, j structs.Lyric) int {
-			return cmp.Compare(i.Time, j.Time)
+			return cmp.Compare(i.Timing, j.Timing)
 		})
 	}
 
