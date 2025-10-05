@@ -66,9 +66,9 @@ func Fetch(song *structs.Song) (structs.LyricsData, CacheState) {
 // Store saves the lyrics data of a given song to a JSON file in the cache directory.
 func Store(song *structs.Song) error {
 	global.Config.M.Lock()
-	defer global.Config.M.Unlock()
-
 	cacheDirectory := getCacheDir()
+	global.Config.M.Unlock()
+
 	if _, err := os.ReadDir(cacheDirectory); err != nil {
 		err = os.Mkdir(cacheDirectory, 0o744)
 		if err != nil {
@@ -104,9 +104,9 @@ func Store(song *structs.Song) error {
 // but it was useful in the past and might be again in the future.
 func Remove(song *structs.Song) error {
 	global.Config.M.Lock()
-	defer global.Config.M.Unlock()
-
 	cacheDirectory := getCacheDir()
+	global.Config.M.Unlock()
+
 	if _, err := os.ReadDir(cacheDirectory); err != nil {
 		return errors.ErrDirUnreachable
 	}

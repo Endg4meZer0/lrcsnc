@@ -10,13 +10,17 @@ type Config struct {
 	// Player config is for player related things. Currently it is used
 	// for specifying included/excluded players for the watcher.
 	Player PlayerConfig `toml:"player"`
+	// Net config is for client-server mode settings.
+	Net NetConfig `toml:"net"`
 	// Lyrics config currently has stuff to do with lyrics providers,
 	// time offset and romanization
 	Lyrics LyricsConfig `toml:"lyrics"`
 	// Cache config has an "enabled" toggle, dir path and life span
 	Cache CacheConfig `toml:"cache"`
-	// Output config has... a lot of personalized settings.
-	Output OutputConfig `toml:"output"`
+	// ClientOutput config has lots of personalized settings for the
+	// lrcsnc's native client that is used in standalone and client modes.
+	// Stuff like what kind of output should be going from lrcsnc is described here.
+	ClientOutput ClientOutputConfig `toml:"client-output"`
 }
 
 // LEVEL 1
@@ -24,6 +28,21 @@ type Config struct {
 type PlayerConfig struct {
 	IncludedPlayers []string `toml:"included-players"`
 	ExcludedPlayers []string `toml:"excluded-players"`
+}
+
+type NetConfig struct {
+	// IsServer is a boolean that exists mostly for the purposes
+	// of making an easier way to code the switch to server mode.
+	// It can be set to true in the config file as well:
+	// though it is not recommended to do that in your main config file.
+	IsServer bool `toml:"is-server"`
+	// Protocol represents the protocol used to connect or to start a server
+	// on. Can use values available in net.Listen (so "unix", "tcp" and some other variations)
+	// and empty for standalone mode.
+	Protocol string `toml:"protocol"`
+	// ListenAt represents the path of a server to listen to.
+	// If lrcsnc fails to connect to a server at this path, then it crashes.
+	ListenAt string `toml:"listen-at"`
 }
 
 type LyricsConfig struct {
@@ -39,9 +58,11 @@ type CacheConfig struct {
 	StoreCondition CacheStoreConditionConfig `toml:"store-condition"`
 }
 
-type OutputConfig struct {
-	Type  types.OutputType  `toml:"type"`
-	Piped PipedOutputConfig `toml:"piped"`
+type ClientOutputConfig struct {
+	Destination   string             `toml:"destination"`
+	Template      string             `toml:"template"`
+	InsertNewline bool               `toml:"insert-newline"`
+	Format        FormatOutputConfig `toml:"format"`
 }
 
 // LEVEL 2
@@ -79,19 +100,9 @@ func (c *CacheStoreConditionConfig) IsEnabledFor(ls types.LyricsState) bool {
 	}
 }
 
-type PipedOutputConfig struct {
-	Destination   string             `toml:"destination"`
-	Template      string             `toml:"template"`
-	InsertNewline bool               `toml:"insert-newline"`
-	Format        FormatOutputConfig `toml:"format"`
-}
-
-// LEVEL 3
-
 type FormatOutputConfig struct {
-	Multiplier string `toml:"multiplier"`
-
 	Lyric          string             `toml:"lyric"`
+	Multiplier     string             `toml:"multiplier"`
 	NotPlaying     string             `toml:"not-playing"`
 	NoLyrics       string             `toml:"no-lyrics"`
 	NoSyncedLyrics string             `toml:"no-synced-lyrics"`

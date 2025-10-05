@@ -18,15 +18,17 @@ import (
 var version = "dev"
 
 var opts struct {
-	NoLog              bool   `long:"no-log" description:"Disables logging. --log-file and --log-level are ignored if this flag is set." env:"LRCSNC_NO_LOG"`
-	LogPath            string `long:"log-file" description:"Sets the log file path to use." default:"$HOME/.local/state/lrcsnc/log" env:"LRCSNC_LOG_FILE"`
-	LogLevel           string `long:"log-level" description:"Sets the log level used by logger." default:"info" choice:"debug" choice:"info" choice:"warn" choice:"error" choice:"fatal" env:"LRCSNC_LOG_LEVEL"`
-	ConfigPath         string `short:"c" long:"config" description:"Sets the config file to use" env:"LRCSNC_CONFIG"`
-	ConfigGeneratePath string `long:"config-gen" description:"Generates a config from the default one and places it in the specified path, then exits" env:"LRCSNC_CONFIG_GEN"`
-	CacheDirectory     string `short:"d" long:"cache-dir" description:"Sets the cache directory" env:"LRCSNC_CACHE"`
-	IsPiped            bool   `short:"p" long:"piped" description:"Set the output to 'piped', fully ignoring the config." env:"LRCSNC_PIPED"`
-	OutputFilePath     string `short:"o" long:"output" description:"Sets an output file to use instead of standard output when using piped output" env:"LRCSNC_OUTPUT"`
-	DisplayVersion     bool   `short:"v" long:"version" description:"Display the version"`
+	NoLog                bool   `long:"no-log" description:"Disables logging. --log-file and --log-level are ignored if this flag is set." env:"LRCSNC_NO_LOG"`
+	LogPath              string `long:"log-file" description:"Sets the log file path to use." default:"$HOME/.local/state/lrcsnc/log" env:"LRCSNC_LOG_FILE"`
+	LogLevel             string `long:"log-level" description:"Sets the log level used by logger." default:"info" choice:"debug" choice:"info" choice:"warn" choice:"error" choice:"fatal" env:"LRCSNC_LOG_LEVEL"`
+	ConfigPath           string `short:"c" long:"config" description:"Sets the config file to use" env:"LRCSNC_CONFIG"`
+	ConfigGeneratePath   string `long:"config-gen" description:"Generates a config from the default one and places it in the specified path, then exits" env:"LRCSNC_CONFIG_GEN"`
+	IsServer             bool   `short:"s" long:"server" description:"Start lrcsnc in server mode. Requires protocol and listen path to be set." env:"LRCSNC_SERVER"`
+	Protocol             string `short:"p" long:"protocol" description:"Sets the protocol to use for net connections." choice:"unix" choice:"tcp" choice:"tcp4" choice:"tcp6" env:"LRCSNC_PROTOCOL"`
+	ListenAt             string `short:"l" long:"listen" description:"Sets the port/socket path to listen at. If launched as server, starts serving on this path instead. Format: <path> for Unix or <host>:<port> for TCP" env:"LRCSNC_LISTEN_AT"`
+	CacheDirectory       string `short:"d" long:"cache-dir" description:"Sets the cache directory" env:"LRCSNC_CACHE"`
+	ClientOutputFilePath string `short:"o" long:"output" description:"Sets an output file to use instead of standard output when in standalone or client mode" env:"LRCSNC_OUTPUT"`
+	DisplayVersion       bool   `short:"v" long:"version" description:"Display the version"`
 }
 
 // Setup parses the command line flags (or their environment variable equivalents)
@@ -90,6 +92,21 @@ func Setup() {
 		}
 	}
 
+	// Explicitly set the protocol if the flag is not empty
+	if opts.Protocol != "" {
+		global.Config.C.Net.Protocol = opts.Protocol
+	}
+
+	// Explicitly set the path/host to listen to if the flag is not empty
+	if opts.ListenAt != "" {
+		global.Config.C.Net.ListenAt = opts.ListenAt
+	}
+
+	// Enable server mode if the flag is set
+	if opts.IsServer {
+		global.Config.C.Net.IsServer = opts.IsServer
+	}
+
 	// Explicitly change cache directory for this app instance if the flag is set
 	if opts.CacheDirectory != "" {
 		// Only ignore the directory if there is an error and it is not a "not exist" error
@@ -101,18 +118,14 @@ func Setup() {
 		}
 	}
 
-	// Explicitly set the output type to "piped" for this app instance if the flag is set
-	if opts.IsPiped {
-		global.Config.C.Output.Type = "piped"
-	}
-
-	// If the output type is "piped", explicitly set the output file path for this app instance if the flag is set
-	if opts.OutputFilePath != "" && global.Config.C.Output.Type == "piped" {
+	// If lrcsnc is not in server mode, explicitly set the output file path for this app instance if the flag is set
+	if opts.ClientOutputFilePath != "" && !global.Config.C.Net.IsServer {
 		// We'll try to write to or create the file on the specified path first to ensure it is valid
-		if _, err := os.OpenFile(opts.OutputFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644); err != nil {
-			log.Error("setup", fmt.Sprintf("The provided output file path (%v) is invalid and will be ignored. Error: %v", opts.OutputFilePath, err))
+		if k, err := os.OpenFile(opts.ClientOutputFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644); err != nil {
+			log.Error("setup", fmt.Sprintf("The provided output file path (%v) is invalid and will be ignored. Error: %v", opts.ClientOutputFilePath, err))
 		} else {
-			global.Config.C.Output.Piped.Destination = opts.OutputFilePath
+			k.Close()
+			global.Config.C.ClientOutput.Destination = opts.ClientOutputFilePath
 			// The output is not initialized yet, so no events are sent to the output controller
 		}
 	}

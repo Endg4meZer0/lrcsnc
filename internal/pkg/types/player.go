@@ -11,21 +11,17 @@ const (
 	LyricsStateUnknown      LyricsState = 5
 )
 
+var lyricsStateStrings = map[LyricsState]string{
+	LyricsStateSynced:       "synced",
+	LyricsStatePlain:        "plain",
+	LyricsStateInstrumental: "instrumental",
+	LyricsStateNotFound:     "not-found",
+	LyricsStateLoading:      "loading",
+	LyricsStateUnknown:      "unknown",
+}
+
 func (l LyricsState) String() string {
-	switch l {
-	case LyricsStateSynced:
-		return "synced"
-	case LyricsStatePlain:
-		return "plain"
-	case LyricsStateInstrumental:
-		return "instrumental"
-	case LyricsStateNotFound:
-		return "not-found"
-	case LyricsStateLoading:
-		return "loading"
-	default:
-		return "unknown"
-	}
+	return lyricsStateStrings[l]
 }
 
 func (l LyricsState) ToCacheStoreCondition() CacheStoreConditionType {

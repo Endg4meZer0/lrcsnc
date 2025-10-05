@@ -24,26 +24,6 @@ const (
 	CacheStoreConditionNone         CacheStoreConditionType = 0b000
 )
 
-// OutputType is a type of output to use.
-//
-// Possible values: "piped".
-type OutputType string
-
-const (
-	OutputPiped OutputType = "piped"
-)
-
-// JSONOutputType is a variant of JSON output to use in piped output
-//
-// Possible values: "none", "generic", "waybar"
-type JSONOutputType string
-
-const (
-	JSONOutputNone    JSONOutputType = "none"
-	JSONOutputGeneric JSONOutputType = "generic"
-	JSONOutputWaybar  JSONOutputType = "waybar"
-)
-
 // LogLevelType represents the log level to use in logger.
 //
 // Possible values: "debug", "info", "warn", "error", "fatal".

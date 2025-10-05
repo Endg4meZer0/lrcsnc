@@ -44,6 +44,7 @@ func Romanize(lyrics []structs.Lyric) {
 	global.Config.M.Lock()
 
 	if !global.Config.C.Lyrics.Romanization.IsEnabled() {
+		global.Config.M.Unlock()
 		return
 	}
 

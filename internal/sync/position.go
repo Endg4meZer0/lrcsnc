@@ -1,7 +1,7 @@
 package sync
 
 import (
-	"log"
+	"lrcsnc/internal/pkg/log"
 	"time"
 
 	"lrcsnc/internal/mpris"
@@ -37,8 +37,7 @@ func positionSynchronizer() {
 		isSynchronizing = true
 		oldPos, err := mpris.GetPosition()
 		if err != nil {
-			// TODO: logger
-			log.Println(err)
+			log.Error("sync", "positionSynchronizer failed to get position: " + err.Error())
 			continue
 		}
 		ticker.Reset(50 * time.Millisecond)
@@ -46,8 +45,7 @@ func positionSynchronizer() {
 			<-ticker.C
 			newPos, err := mpris.GetPosition()
 			if err != nil {
-				// TODO: logger
-				log.Println(err)
+			log.Error("sync", "positionSynchronizer failed to get position: " + err.Error())
 				break
 			}
 			if newPos != oldPos {

@@ -24,7 +24,7 @@ func Fetch() (structs.LyricsData, error) {
 
 	log.Debug("lyrics/fetch", fmt.Sprintf("Fetching lyrics for song %v - %v", strings.Join(song.Artists, ", "), song.Title))
 
-	// yea i'm not covering this with mutexes good luck timing this out
+	// yea i'm not covering this with mutexes good luck timing this out future me
 	if global.Config.C.Cache.Enabled {
 		cachedData, cacheState := cache.Fetch(&song)
 		if cacheState == cache.CacheStateActive {

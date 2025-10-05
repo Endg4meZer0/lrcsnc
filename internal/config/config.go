@@ -5,7 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"lrcsnc/internal/output"
+	"lrcsnc/internal/output/client"
+	"lrcsnc/internal/output/pkg/event"
 	errs "lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
@@ -99,7 +100,12 @@ func Update() {
 		default:
 			log.Error("config/Update", "Unknown error: "+err.Error())
 		}
-	} else {
-		output.Controllers[global.Config.C.Output.Type].OnConfigUpdate()
+	}
+
+	if !global.Config.C.Net.IsServer {
+		client.ReceiveEvent(event.Event{
+			Type: event.EventTypeConfigReloaded,
+			Data: nil,
+		})
 	}
 }

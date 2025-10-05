@@ -3,7 +3,8 @@ package sync
 import (
 	"fmt"
 	"lrcsnc/internal/mpris"
-	"lrcsnc/internal/output"
+	"lrcsnc/internal/output/pkg/event"
+	"lrcsnc/internal/output/server"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
 
@@ -15,13 +16,25 @@ func mprisMessageReceiver() {
 		log.Debug("sync/mprisMessageReceiver", fmt.Sprintf("Received message: %v", msg))
 		switch msg.Type {
 		case mpris.SignalReady, mpris.SignalPlayerChanged:
+			go server.ReceiveEvent(event.Event{
+				Type: event.EventTypePlayerChanged,
+				Data: event.EventTypePlayerChangedData{
+					Name: global.Player.P.Name,
+				},
+			})
 			if global.Player.P.PlaybackStatus != mprislib.PlaybackStopped {
 				songChanged <- true
-			} else {
-				output.Controllers[global.Config.C.Output.Type].DisplayLyric(-1)
 			}
+			go server.ReceiveEvent(event.Event{
+				Type: event.EventTypePlaybackStatusChanged,
+				Data: event.EventTypePlaybackStatusChangedData{
+					PlaybackStatus: global.Player.P.PlaybackStatus,
+				},
+			})
 		case mpris.SignalSeeked:
-			// On seeked signal we just update the position...
+			// On seeked signal we only update the position,
+			// and we're not sending any specific events
+			// to server...
 			global.Player.M.Lock()
 			global.Player.P.Position = msg.Data.(float64) / 1000 / 1000
 			global.Player.M.Unlock()
@@ -35,9 +48,15 @@ func mprisMessageReceiver() {
 			if global.Player.P.PlaybackStatus == mprislib.PlaybackStopped {
 				global.Player.P.Position = 0
 			}
-			global.Player.M.Unlock()
 
-			outputUpdate()
+			go server.ReceiveEvent(event.Event{
+				Type: event.EventTypePlaybackStatusChanged,
+				Data: event.EventTypePlaybackStatusChangedData{
+					PlaybackStatus: global.Player.P.PlaybackStatus,
+				},
+			})
+
+			global.Player.M.Unlock()
 
 			// And ask for a position sync to be sure
 			AskForPositionSync()
@@ -46,7 +65,14 @@ func mprisMessageReceiver() {
 			// If the rate has changed...
 			global.Player.M.Lock()
 			global.Player.P.Rate = msg.Data.(float64)
+			go server.ReceiveEvent(event.Event{
+				Type: event.EventTypeRateChanged,
+				Data: event.EventTypeRateChangedData{
+					Rate: global.Player.P.Rate,
+				},
+			})
 			global.Player.M.Unlock()
+
 			// ...we will absolutely ask for a sync, since the old sync is now invalid
 			AskForPositionSync()
 
@@ -58,11 +84,8 @@ func mprisMessageReceiver() {
 				log.Error("sync/mprisMessageReceiver", "Couldn't parse metadata: "+err.Error())
 			}
 			global.Player.M.Unlock()
-			// Now we can send a signal to the output module
-			// that the info has changed
-			output.Controllers[global.Config.C.Output.Type].OnPlayerUpdate()
 
-			// And also send a signal that the song has changed and we need
+			// Send a signal that the song has changed and we need
 			// to fetch some new lyrics
 			songChanged <- true
 

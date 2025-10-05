@@ -97,14 +97,14 @@ func nameOwnerChangeWatcher() {
 
 		// Skipping any not NameOwnerChanged signals
 		if signalType := mprislib.GetSignalType(s); signalType != mprislib.SignalNameOwnerChanged {
-			log.Debug("mpris/nameOwnerChangesWatcher", fmt.Sprintf("Signal is not NameOwnerChanged (%s). Skipping...", signalType))
+			// log.Debug("mpris/nameOwnerChangesWatcher", fmt.Sprintf("Signal is not NameOwnerChanged (%s). Skipping...", signalType))
 			continue
 		}
 
 		// Skipping any signals not related to MPRIS
 		// See also: https://dbus.freedesktop.org/doc/dbus-specification.html#bus-messages-name-owner-changed
 		if !strings.HasPrefix(s.Body[0].(string), mprislib.BaseInterface) {
-			log.Debug("mpris/nameOwnerChangesWatcher", fmt.Sprintf("Signal is not related to MPRIS (%s). Skipping...", s.Body[0].(string)))
+			// log.Debug("mpris/nameOwnerChangesWatcher", fmt.Sprintf("Signal is not related to MPRIS (%s). Skipping...", s.Body[0].(string)))
 			continue
 		}
 

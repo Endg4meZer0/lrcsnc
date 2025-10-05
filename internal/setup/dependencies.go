@@ -14,8 +14,8 @@ func CheckDependencies() {
 	defer global.Config.M.Unlock()
 
 	// kakasi - for japanese romanization
-	if _, err := exec.LookPath("kakasi"); err != nil {
-		log.Info("setup/dependencies", "kakasi not found, disabling Japanese romanization")
+	if _, err := exec.LookPath("kakasi"); err != nil && global.Config.C.Lyrics.Romanization.Japanese {
+		log.Info("setup/dependencies", "kakasi was not found; disabling Japanese romanization. If you want it back, please, install kakasi.")
 		global.Config.C.Lyrics.Romanization.Japanese = false
 	}
 }

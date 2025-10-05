@@ -21,8 +21,6 @@ import (
 // (if it finds, changes the player and informs corresponding channels)
 func ChangePlayer() error {
 	log.Debug("mpris/ChangePlayer", "Started")
-	global.Config.M.Lock()
-	defer global.Config.M.Unlock()
 
 	// Getting the players list
 	players, err := mpris.List(conn)
@@ -34,6 +32,8 @@ func ChangePlayer() error {
 
 	// A little helper function to filter players
 	playerInFilter := func(player string) bool {
+		global.Config.M.Lock()
+		defer global.Config.M.Unlock()
 		if len(global.Config.C.Player.IncludedPlayers) != 0 {
 			for _, includedPlayer := range global.Config.C.Player.IncludedPlayers {
 				if strings.Contains(player, includedPlayer) {
@@ -163,6 +163,7 @@ func ChangePlayer() error {
 				LyricsState: types.LyricsStateUnknown,
 			},
 		},
+		Name: "",
 	}
 	global.Player.M.Unlock()
 	return nil

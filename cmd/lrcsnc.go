@@ -7,7 +7,8 @@ import (
 
 	"lrcsnc/internal/config"
 	"lrcsnc/internal/mpris"
-	"lrcsnc/internal/output/piped"
+	"lrcsnc/internal/output/client"
+	"lrcsnc/internal/output/server"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
 	"lrcsnc/internal/setup"
@@ -32,29 +33,35 @@ func Start() {
 		}
 	}()
 
-	// Deploy the main watchers
-	sync.Start()
-
-	// Initialize the player listener session
-	err := mpris.Connect()
-	if err != nil {
-		log.Fatal("cmd", "Error when configuring MPRIS. Check logs for more info.")
+	// Initialize the client5
+	// (only if not explicitly launched in server mode)
+	if !global.Config.C.Net.IsServer {
+		client.InitClient()
+		defer client.Close()
 	}
-	defer mpris.Disconnect()
 
-	// Initialize the output
-	switch global.Config.C.Output.Type {
-	case "piped":
-		piped.Init()
-		defer piped.Close()
+	// Initialize the server
+	// (only if not explicitly launched in client mode)
+	if global.Config.C.Net.IsServer || global.Config.C.Net.Protocol == "" {
+		// Deploy the main watchers
+		sync.Start()
 
-		exitSigs := make(chan os.Signal, 1)
-		signal.Notify(exitSigs, syscall.SIGINT, syscall.SIGTERM)
+		// Initialize the player listener session
+		err := mpris.Connect()
+		if err != nil {
+			log.Fatal("cmd", "Error when configuring MPRIS. Check logs for more info.")
+		}
+		defer mpris.Disconnect()
 
-		log.Info("cmd", "Piped output initialized.")
-
-		<-exitSigs
-		log.Info("cmd", "Exit signal received, bye!")
-		os.Exit(0)
+		server.InitServer()
+		defer server.CloseServer()
 	}
+
+	exitSigs := make(chan os.Signal, 1)
+	signal.Notify(exitSigs, syscall.SIGINT, syscall.SIGTERM)
+
+	log.Info("cmd", "lrcsnc has started.")
+
+	<-exitSigs
+	log.Info("cmd", "Exit signal received, bye!")
 }
