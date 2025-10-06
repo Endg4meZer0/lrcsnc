@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [[0.2.0](https://github.com/Endg4meZer0/lrcsnc/releases/tag/v0.2.0)] - 2025-10-##
+### Added
+- Client-server communication is realized: now lrcsnc can be launched in server-only (`-l` with `-s`) or client-only (`-l`) mode using UNIX sockets or TCP protocol. Standalone mode is still available, and is a default option.
+### Changed
+- In the output the plain and JSON variants were replaced by templates and formats: you can do any kind of output now by using the `template` config option and keys like `{text}`, `{title}` and others (check wiki for more).
+- Store condition config option was changed from byte set to a more human-readable TOML submap.
+    Was:
+    ```
+    [cache]
+    ...
+    store-condition = 100 # first for synced, second for plain, third for instrumental
+    ```
+    Now:
+    ```
+    [cache]
+    ...
+
+    [cache.store-condition]
+    if-synced = true
+    if-plain = false
+    if-instrumental = true # was changed to true by default with this refactor
+    ``` 
+
 ## [[0.1.0](https://github.com/Endg4meZer0/lrcsnc/releases/tag/v0.1.0)] - 2025-05-03
 ### Added
 - Some simple unit tests like cache and romanization.
