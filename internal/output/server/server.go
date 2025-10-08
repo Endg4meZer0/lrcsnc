@@ -7,7 +7,6 @@ import (
 	"lrcsnc/internal/pkg/log"
 	"net"
 	"os"
-	"strings"
 )
 
 type Server struct {
@@ -15,6 +14,16 @@ type Server struct {
 	ListenPath  string
 	NetListener net.Listener
 	Conns       Connections
+
+	// 0 - PlayerChanged
+	// 1 - RateChanged
+	// 2 - SongChanged
+	// 3 - PlaybackStatusChanged
+	// 4 - LyricsStateChanged
+	// 5 - LyricsChanged
+	// 6 - ActiveLyricChanged
+	// 7 - OverwriteRequired
+	LastEvents []event.Event
 }
 
 var server Server
@@ -37,6 +46,7 @@ func InitServer() {
 			ListenPath:  "",
 			NetListener: nil,
 			Conns:       Connections{},
+			LastEvents:  nil,
 		}
 
 		global.Config.M.Unlock()
@@ -67,11 +77,11 @@ func InitServer() {
 		ListenPath:  listenPath,
 		NetListener: l,
 		Conns:       Connections{Map: make(map[uint]net.Conn), FirstFreeSlot: 0},
+		LastEvents:  makeDefaultLastEvents(),
 	}
 
 	go func() {
 		for {
-			server.Conns.M.Lock()
 			conn, err := server.NetListener.Accept()
 			server.Conns.M.Lock()
 			if err != nil {
@@ -80,6 +90,7 @@ func InitServer() {
 			server.Conns.Map[server.Conns.FirstFreeSlot] = conn
 			server.Conns.M.Unlock()
 			go server.Conns.FindFirstAvailableSlot()
+			go server.sendLastEvents()
 		}
 	}()
 }
@@ -89,10 +100,7 @@ func ReceiveEvent(e event.Event) {
 }
 
 func (s *Server) handleEvent(e event.Event) {
-	switch e.Type {
-	default:
-		s.sendEvent(e)
-	case event.EventTypeServerClosed:
+	if e.Type == event.EventTypeServerClosed {
 		log.Info("output/server", "Start closing the server...")
 		for i, c := range s.Conns.Map {
 			c.Close()
@@ -101,7 +109,29 @@ func (s *Server) handleEvent(e event.Event) {
 		if server.Protocol == "unix" {
 			os.Remove(s.ListenPath)
 		}
+		return
 	}
+
+	switch e.Type {
+	case event.EventTypePlayerChanged:
+		s.LastEvents[0] = e
+	case event.EventTypeRateChanged:
+		s.LastEvents[1] = e
+	case event.EventTypeSongChanged:
+		s.LastEvents[2] = e
+	case event.EventTypePlaybackStatusChanged:
+		s.LastEvents[3] = e
+	case event.EventTypeLyricsStateChanged:
+		s.LastEvents[4] = e
+	case event.EventTypeLyricsChanged:
+		s.LastEvents[5] = e
+	case event.EventTypeActiveLyricChanged:
+		s.LastEvents[6] = e
+	case event.EventTypeOverwriteRequired:
+		s.LastEvents[7] = e
+	}
+
+	s.sendEvent(e)
 }
 
 func CloseServer() {

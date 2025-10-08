@@ -34,3 +34,9 @@ func (s *Server) sendEvent(e event.Event) {
 		}
 	}
 }
+
+func (s *Server) sendLastEvents() {
+	for _, e := range s.LastEvents {
+		s.sendEvent(e)
+	}
+}
