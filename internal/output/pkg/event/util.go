@@ -38,6 +38,7 @@ func MakeDefaultEvent(et EventType) (e Event) {
 		e.Data = EventTypeActiveLyricChangedData{
 			Index:        -1,
 			Lyric:        structs.Lyric{Timing: 0, Text: ""},
+			Multiplier:   0,
 			TimeUntilEnd: 0,
 			Resync:       false,
 		}

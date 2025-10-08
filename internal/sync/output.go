@@ -9,6 +9,7 @@ import (
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/structs"
 	"lrcsnc/internal/pkg/types"
+	"lrcsnc/internal/pkg/util"
 
 	"github.com/Endg4meZer0/go-mpris"
 )
@@ -35,6 +36,7 @@ func lyricsSynchronizer() {
 				Data: event.EventTypeActiveLyricChangedData{
 					Index:        -1,
 					Lyric:        structs.Lyric{Timing: 0, Text: ""},
+					Multiplier:   0,
 					TimeUntilEnd: 0,
 					Resync:       resyncFlag,
 				},
@@ -68,6 +70,7 @@ func lyricsSynchronizer() {
 					Data: event.EventTypeActiveLyricChangedData{
 						Index:        newLyricIndex,
 						Lyric:        lyric,
+						Multiplier:   util.CalculateMultiplier(global.Player.P.Song.LyricsData.Lyrics, newLyricIndex),
 						TimeUntilEnd: nextLyricTiming - global.Player.P.Position,
 						Resync:       resyncFlag,
 					},

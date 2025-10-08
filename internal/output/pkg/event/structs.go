@@ -13,6 +13,9 @@ type EventTypeActiveLyricChangedData struct {
 	// Lyric is lyric itself. If the lyric is empty, it is
 	// considered an instrumental lyric.
 	Lyric structs.Lyric
+	// Multiplier is the number of times the lyric repeated itself
+	// in the text up to this moment.
+	Multiplier int
 	// TimeUntilEnd is calculated here using just the timing
 	// of the current lyric and the next lyric (in seconds).
 	TimeUntilEnd float64

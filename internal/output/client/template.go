@@ -13,7 +13,7 @@ func (c *Client) formatToTemplate() string {
 
 // formatLyric formats the pending lyric-only string to be displayed
 // in accordance with the text format configuration.
-func (c *Client) formatLyric(index int) string {
+func (c *Client) formatLyric(index int, mult int) string {
 	global.Config.M.Lock()
 	defer global.Config.M.Unlock()
 	global.Player.M.Lock()
@@ -26,13 +26,9 @@ func (c *Client) formatLyric(index int) string {
 	}
 
 	// Calculating the multiplier value
-	multiplierValue := 0
-	for i := index; i >= 0 && global.Player.P.Song.LyricsData.Lyrics[i].Text == c.pendingText; i-- {
-		multiplierValue++
-	}
 	multiplier := ""
-	if multiplierValue > 1 {
-		multiplier = strings.ReplaceAll(global.Config.C.ClientOutput.Format.Multiplier, "%value%", strconv.Itoa(multiplierValue))
+	if mult > 1 {
+		multiplier = strings.ReplaceAll(global.Config.C.ClientOutput.Format.Multiplier, "%value%", strconv.Itoa(mult))
 	}
 	replacer := strings.NewReplacer(
 		"%lyric%", c.pendingText,
