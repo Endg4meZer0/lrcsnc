@@ -31,12 +31,12 @@ if-instrumental = true
 
 [client-output]
 destination = "stdout"
-template = "{text}"
+template = "%text%"
 insert-newline = true
 
 [client-output.format]
-lyric = "{lyric}{multiplier}"
-multiplier = " (x{value})"
+lyric = "%lyric%%multiplier%"
+multiplier = " (x%value%)"
 not-playing = " Nothing is playing"
 no-lyrics = "⨯ No lyrics!"
 no-synced-lyrics = "󰦨 No synced lyrics!"

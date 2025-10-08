@@ -11,8 +11,7 @@ type DynamicReplacer struct {
 	m map[string]func() string
 }
 
-const startDelim = '{'
-const endDelim = '}'
+const keyDelim = '%'
 
 func NewDynamicReplacer(_m map[string]func() string) *DynamicReplacer {
 	return &DynamicReplacer{
@@ -29,7 +28,7 @@ func (dr *DynamicReplacer) Replace(template string) string {
 	i := 0
 
 	for i < len(template) {
-		startIndex := strings.IndexRune(template[i:], startDelim)
+		startIndex := strings.IndexRune(template[i:], keyDelim)
 		if startIndex == -1 {
 			result.WriteString(template[i:])
 			break
@@ -37,12 +36,12 @@ func (dr *DynamicReplacer) Replace(template string) string {
 		startIndex += i
 		result.WriteString(template[i:startIndex])
 
-		endIndex := strings.IndexRune(template[startIndex:], endDelim)
+		endIndex := strings.IndexRune(template[startIndex+1:], keyDelim)
 		if endIndex == -1 {
 			result.WriteString(template[startIndex:])
 			break
 		}
-		endIndex += startIndex
+		endIndex += startIndex + 1
 		key := template[startIndex+1 : endIndex]
 
 		if fn, ok := dr.m[key]; ok {

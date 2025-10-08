@@ -87,7 +87,7 @@ func (c *Client) instrumentalLoop() {
 
 			switch global.Player.P.Song.LyricsData.LyricsState {
 			case types.LyricsStateSynced, types.LyricsStateInstrumental:
-				stringToPrint = strings.NewReplacer("{lyric}", "", "{multiplier}", "").Replace(global.Config.C.ClientOutput.Format.Lyric)
+				stringToPrint = strings.NewReplacer("%lyric%", "", "%multiplier%", "").Replace(global.Config.C.ClientOutput.Format.Lyric)
 			case types.LyricsStatePlain:
 				stringToPrint = global.Config.C.ClientOutput.Format.NoSyncedLyrics
 			case types.LyricsStateNotFound:

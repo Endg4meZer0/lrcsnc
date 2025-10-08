@@ -32,11 +32,11 @@ func (c *Client) formatLyric(index int) string {
 	}
 	multiplier := ""
 	if multiplierValue > 1 {
-		multiplier = strings.ReplaceAll(global.Config.C.ClientOutput.Format.Multiplier, "{value}", strconv.Itoa(multiplierValue))
+		multiplier = strings.ReplaceAll(global.Config.C.ClientOutput.Format.Multiplier, "%value%", strconv.Itoa(multiplierValue))
 	}
 	replacer := strings.NewReplacer(
-		"{lyric}", c.pendingText,
-		"{multiplier}", multiplier,
+		"%lyric%", c.pendingText,
+		"%multiplier%", multiplier,
 	)
 
 	return replacer.Replace(global.Config.C.ClientOutput.Format.Lyric)

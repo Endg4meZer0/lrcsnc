@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Client-server communication is realized: now lrcsnc can be launched in server-only (`-l` with `-s`) or client-only (`-l`) mode using UNIX sockets or TCP protocol. Standalone mode is still available, and is a default option.
 ### Changed
-- In the output the plain and JSON variants were replaced by templates and formats: you can do any kind of output now by using the `template` config option and keys like `{text}`, `{title}` and others (check wiki for more).
+- In the output the plain and JSON variants were replaced by templates and formats: you can do any kind of output now by using the `template` config option and keys like `%text%`, `%title%` and others (check wiki for more).
 - Store condition config option was changed from byte set to a more human-readable TOML submap.
     Was:
     ```
