@@ -24,7 +24,7 @@ func (s *Server) sendEvent(e event.Event) {
 	}
 	for i, c := range s.Conns.Map {
 		c.SetWriteDeadline(time.Now().Add(500 * time.Millisecond))
-		_, err := c.Write(d)
+		_, err := c.Write(append(d, byte('\n')))
 		if errors.Is(err, syscall.EPIPE) || errors.Is(err, net.ErrClosed) || errors.Is(err, io.EOF) {
 			delete(s.Conns.Map, i)
 		}

@@ -33,7 +33,7 @@ func Start() {
 		}
 	}()
 
-	// Initialize the client5
+	// Initialize the client
 	// (only if not explicitly launched in server mode)
 	if !global.Config.C.Net.IsServer {
 		client.InitClient()
@@ -43,6 +43,9 @@ func Start() {
 	// Initialize the server
 	// (only if not explicitly launched in client mode)
 	if global.Config.C.Net.IsServer || global.Config.C.Net.Protocol == "" {
+		server.InitServer()
+		defer server.CloseServer()
+
 		// Deploy the main watchers
 		sync.Start()
 
@@ -52,9 +55,6 @@ func Start() {
 			log.Fatal("cmd", "Error when configuring MPRIS. Check logs for more info.")
 		}
 		defer mpris.Disconnect()
-
-		server.InitServer()
-		defer server.CloseServer()
 	}
 
 	exitSigs := make(chan os.Signal, 1)

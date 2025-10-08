@@ -43,18 +43,16 @@ func InitServer() {
 		return
 	}
 
-	listenPathParts := strings.Split(global.Config.C.Net.ListenAt, "://")
+	protocol := global.Config.C.Net.Protocol
+	listenPath := global.Config.C.Net.ListenAt
 	global.Config.M.Unlock()
-
-	protocol := listenPathParts[0]
-	listenPath := listenPathParts[1]
 
 	// If protocol is "unix", check
 	// if listenPath is a valid path that is reachable
 	// and if there is a file already there,
 	// give fatal error.
 	if protocol == "unix" {
-		if _, err := os.Lstat(listenPath); !errors.Is(err, os.ErrNotExist) {
+		if _, err := os.Lstat(listenPath); err != nil && !errors.Is(err, os.ErrNotExist) {
 			log.Fatal("output/server", "Listen path is invalid: file exists or there is an issue with permissions. You may want to check it out and remove file/change perms manually. More: "+err.Error())
 		}
 	}
@@ -75,6 +73,7 @@ func InitServer() {
 		for {
 			server.Conns.M.Lock()
 			conn, err := server.NetListener.Accept()
+			server.Conns.M.Lock()
 			if err != nil {
 				log.Error("output/server", "Failed to accept a connection: "+err.Error())
 			}
