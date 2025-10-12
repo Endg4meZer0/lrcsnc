@@ -13,7 +13,7 @@ func (c *client) formatToTemplate() string {
 
 // formatLyric formats the pending lyric-only string to be displayed
 // in accordance with the text format configuration.
-func (c *client) formatLyric(index int, mult int) string {
+func (c *client) formatLyric(mult int) string {
 	global.Config.M.Lock()
 	defer global.Config.M.Unlock()
 	global.Player.M.Lock()

@@ -15,7 +15,7 @@ func (c *client) handleActiveLyricChanged(d event.EventTypeActiveLyricChangedDat
 	c.pendingText = d.Lyric.Text
 
 	if c.pendingText != "" {
-		c.pendingText = c.formatLyric(d.Index, d.Multiplier)
+		c.pendingText = c.formatLyric(d.Multiplier)
 	}
 
 	// If overwrite is not empty yet, once its duration ends,
