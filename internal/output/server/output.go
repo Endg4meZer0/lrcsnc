@@ -18,7 +18,7 @@ func (s *Server) sendEvent(e event.Event) {
 		return
 	}
 
-	d, err := json.Marshal(map[event.EventType]any{e.Type: e.Data})
+	d, err := json.Marshal(e)
 	if err != nil {
 		log.Fatal("output/server", "SendEventAsync returned error during marshalling data. What's up? Error: "+err.Error())
 	}
