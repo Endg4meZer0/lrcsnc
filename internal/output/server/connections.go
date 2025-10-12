@@ -13,6 +13,8 @@ type Connections struct {
 
 func (cs *Connections) FindFirstAvailableSlot() {
 	cs.M.Lock()
+	defer cs.M.Unlock()
+
 	var i uint = 0
 	for i = range uint(len(cs.Map)) {
 		if _, ok := cs.Map[i]; !ok {
@@ -21,5 +23,4 @@ func (cs *Connections) FindFirstAvailableSlot() {
 		}
 	}
 	cs.FirstFreeSlot = i + 1
-	cs.M.Unlock()
 }

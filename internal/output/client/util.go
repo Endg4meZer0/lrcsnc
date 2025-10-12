@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func (c *Client) isOutputStd() bool {
+func (c *client) isOutputStd() bool {
 	return c.outputDestination == os.Stdout ||
 		c.outputDestination == os.Stderr ||
 		c.outputDestination == os.Stdin
@@ -19,7 +19,7 @@ func (c *Client) isOutputStd() bool {
 // changeOutput changes the output destination to the specified path.
 // The write check is usually performed at config validation step,
 // but it's good to have it here too.
-func (c *Client) changeOutput() error {
+func (c *client) changeOutput() error {
 	newDest, err := os.OpenFile(global.Config.C.ClientOutput.Destination, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Error("output/client", "Error opening new output destination file, falling back to stdout. More: "+err.Error())
@@ -43,7 +43,7 @@ func (c *Client) changeOutput() error {
 	return nil
 }
 
-func (c *Client) setTemplateReplacer() {
+func (c *client) setTemplateReplacer() {
 	// The mutexes should be locked before replacer takes action.
 	c.templateReplacer = dynreplacer.NewDynamicReplacer(
 		map[string]func() string{

@@ -12,7 +12,7 @@ import (
 	"os"
 )
 
-type Client struct {
+type client struct {
 	conn net.Conn
 
 	activeText        string
@@ -26,7 +26,7 @@ type Client struct {
 	instrumentalActive bool
 }
 
-var client Client
+var cl client
 
 func InitClient() {
 	global.Config.M.Lock()
@@ -35,7 +35,7 @@ func InitClient() {
 
 	if global.Config.C.Net.Protocol == "" {
 		log.Info("output/client", "Using internal communication (standalone mode).")
-		client = Client{conn: nil}
+		cl = client{conn: nil}
 	} else {
 		log.Info("output/client", "Trying to connect to server...")
 		l, err := net.Dial(global.Config.C.Net.Protocol, global.Config.C.Net.ListenAt)
@@ -44,13 +44,13 @@ func InitClient() {
 		}
 		log.Info("output/client", "Successfully connected to server at "+global.Config.C.Net.Protocol+"://"+global.Config.C.Net.ListenAt)
 
-		client = Client{
+		cl = client{
 			conn: l,
 		}
 
 		// Start the event reader
 		go func() {
-			reader := bufio.NewReader(client.conn)
+			reader := bufio.NewReader(cl.conn)
 			for {
 				str, err := reader.ReadString('\n')
 				if err != nil {
@@ -71,30 +71,30 @@ func InitClient() {
 
 	// Initial check for config's output destination
 	if global.Config.C.ClientOutput.Destination != "stdout" {
-		client.changeOutput()
+		cl.changeOutput()
 	} else {
-		client.outputDestination = os.Stdout
-		client.outputPath = "/dev/stdout"
+		cl.outputDestination = os.Stdout
+		cl.outputPath = "/dev/stdout"
 	}
 	global.Config.M.Unlock()
 
 	log.Info("output/client", "Output initialized, getting ready to roll.")
 
-	client.setTemplateReplacer()
+	cl.setTemplateReplacer()
 
 	log.Info("output/client", "Client is ready.")
 }
 
 func ReceiveEvent(e event.Event) {
 	log.Debug("output/client", fmt.Sprintf("Received new event: %v", e))
-	client.handleEvent(e)
+	cl.handleEvent(e)
 }
 
 func Close() {
-	client.close()
+	cl.close()
 }
 
-func (c *Client) handleEvent(e event.Event) {
+func (c *client) handleEvent(e event.Event) {
 	switch e.Type {
 	case event.EventTypeActiveLyricChanged:
 		c.handleActiveLyricChanged(e.Data.(event.EventTypeActiveLyricChangedData))
@@ -116,18 +116,18 @@ func (c *Client) handleEvent(e event.Event) {
 		c.handleServerClosed(e.Data.(event.EventTypeServerClosedData))
 	case event.EventTypeConfigReloaded:
 		global.Config.M.Lock()
-		if global.Config.C.ClientOutput.Destination != "stdout" && global.Config.C.ClientOutput.Destination != client.outputPath {
-			client.changeOutput()
+		if global.Config.C.ClientOutput.Destination != "stdout" && global.Config.C.ClientOutput.Destination != cl.outputPath {
+			cl.changeOutput()
 		} else if global.Config.C.ClientOutput.Destination == "stdout" {
-			client.outputDestination = os.Stdout
-			client.outputPath = "/dev/stdout"
+			cl.outputDestination = os.Stdout
+			cl.outputPath = "/dev/stdout"
 		}
 		global.Config.M.Unlock()
 		log.Debug("output/client", "Updated ")
 	}
 }
 
-func (c *Client) close() {
+func (c *client) close() {
 	if c.outputDestination != nil && !c.isOutputStd() {
 		c.outputDestination.Close()
 	}

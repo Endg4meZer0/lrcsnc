@@ -12,8 +12,8 @@ import (
 	"time"
 )
 
-func (s *Server) sendEvent(e event.Event) {
-	if s.Protocol == "" {
+func (s *server) sendEvent(e event.Event) {
+	if s.protocol == "" {
 		client.ReceiveEvent(e)
 		return
 	}
@@ -22,23 +22,36 @@ func (s *Server) sendEvent(e event.Event) {
 	if err != nil {
 		log.Fatal("output/server", "SendEventAsync returned error during marshalling data. What's up? Error: "+err.Error())
 	}
-	for i, c := range s.Conns.Map {
+	for i, c := range s.conns.Map {
 		c.SetWriteDeadline(time.Now().Add(500 * time.Millisecond))
 		_, err := c.Write(append(d, byte('\n')))
 		if errors.Is(err, syscall.EPIPE) || errors.Is(err, net.ErrClosed) || errors.Is(err, io.EOF) {
-log.Debug("output/server", "A client disconnected.")
-			delete(s.Conns.Map, i)
+			log.Debug("output/server", "A client disconnected.")
+			delete(s.conns.Map, i)
 		}
 		if errors.Is(err, syscall.ETIMEDOUT) {
 			log.Debug("output/server", "A client timed out. Disconnecting...")
 			c.Close()
-			delete(s.Conns.Map, i)
+			delete(s.conns.Map, i)
 		}
 	}
 }
 
-func (s *Server) sendLastEvents() {
-	for _, e := range s.LastEvents {
-		s.sendEvent(e)
+func (s *server) sendLastEventsTo(index uint) {
+	c := s.conns.Map[index]
+	for _, e := range s.lastEvents {
+		d, err := json.Marshal(e)
+		if err != nil {
+			log.Fatal("output/server", "SendEventAsync returned error during marshalling data. What's up? Error: "+err.Error())
+		}
+		c.SetWriteDeadline(time.Now().Add(1000 * time.Millisecond))
+		_, err = c.Write(append(d, byte('\n')))
+		if errors.Is(err, syscall.EPIPE) || errors.Is(err, net.ErrClosed) || errors.Is(err, io.EOF) {
+			delete(s.conns.Map, index)
+		}
+		if errors.Is(err, syscall.ETIMEDOUT) {
+			c.Close()
+			delete(s.conns.Map, index)
+		}
 	}
 }

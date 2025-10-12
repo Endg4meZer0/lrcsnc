@@ -3,7 +3,7 @@
 
 [player]
 included-players = []
-excluded-players = []
+excluded-players = ["firefox", "zen"]
 
 [net]
 is-server = false

@@ -10,7 +10,7 @@ import (
 	"github.com/Endg4meZer0/go-mpris"
 )
 
-func (c *Client) handleActiveLyricChanged(d event.EventTypeActiveLyricChangedData) {
+func (c *client) handleActiveLyricChanged(d event.EventTypeActiveLyricChangedData) {
 	// Set new pending text and index to the received ones.
 	c.pendingText = d.Lyric.Text
 
@@ -34,7 +34,7 @@ func (c *Client) handleActiveLyricChanged(d event.EventTypeActiveLyricChangedDat
 	c.output()
 }
 
-func (c *Client) handleSongChanged(d event.EventTypeSongChangedData) {
+func (c *client) handleSongChanged(d event.EventTypeSongChangedData) {
 	if c.conn != nil {
 		global.Player.M.Lock()
 		global.Player.P.Song.Title = d.Title
@@ -45,7 +45,7 @@ func (c *Client) handleSongChanged(d event.EventTypeSongChangedData) {
 	}
 }
 
-func (c *Client) handlePlayerChanged(d event.EventTypePlayerChangedData) {
+func (c *client) handlePlayerChanged(d event.EventTypePlayerChangedData) {
 	if c.conn != nil {
 		global.Player.M.Lock()
 		global.Player.P.Name = d.Name
@@ -53,7 +53,7 @@ func (c *Client) handlePlayerChanged(d event.EventTypePlayerChangedData) {
 	}
 }
 
-func (c *Client) handlePlaybackStatusChanged(d event.EventTypePlaybackStatusChangedData) {
+func (c *client) handlePlaybackStatusChanged(d event.EventTypePlaybackStatusChangedData) {
 	if c.conn != nil {
 		global.Player.M.Lock()
 		global.Player.P.PlaybackStatus = d.PlaybackStatus
@@ -67,7 +67,7 @@ func (c *Client) handlePlaybackStatusChanged(d event.EventTypePlaybackStatusChan
 	c.output()
 }
 
-func (c *Client) handleRateChanged(d event.EventTypeRateChangedData) {
+func (c *client) handleRateChanged(d event.EventTypeRateChangedData) {
 	if c.conn != nil {
 		global.Player.M.Lock()
 		global.Player.P.Rate = d.Rate
@@ -75,7 +75,7 @@ func (c *Client) handleRateChanged(d event.EventTypeRateChangedData) {
 	}
 }
 
-func (c *Client) handleLyricsStateChanged(d event.EventTypeLyricsStateChangedData) {
+func (c *client) handleLyricsStateChanged(d event.EventTypeLyricsStateChangedData) {
 	if c.conn != nil {
 		global.Player.M.Lock()
 		global.Player.P.Song.LyricsData.LyricsState = d.State
@@ -86,7 +86,7 @@ func (c *Client) handleLyricsStateChanged(d event.EventTypeLyricsStateChangedDat
 	c.output()
 }
 
-func (c *Client) handleLyricsChanged(d event.EventTypeLyricsChangedData) {
+func (c *client) handleLyricsChanged(d event.EventTypeLyricsChangedData) {
 	if c.conn != nil {
 		global.Player.M.Lock()
 		global.Player.P.Song.LyricsData.Lyrics = d.Lyrics
@@ -97,7 +97,7 @@ func (c *Client) handleLyricsChanged(d event.EventTypeLyricsChangedData) {
 	c.output()
 }
 
-func (c *Client) handleOverwriteRequired(d event.EventTypeOverwriteRequiredData) {
+func (c *client) handleOverwriteRequired(d event.EventTypeOverwriteRequiredData) {
 	c.pendingText = c.activeText
 	c.overwrite = d.Overwrite
 	c.output()
@@ -109,7 +109,7 @@ func (c *Client) handleOverwriteRequired(d event.EventTypeOverwriteRequiredData)
 	}()
 }
 
-func (c *Client) handleServerClosed(_ event.EventTypeServerClosedData) {
+func (c *client) handleServerClosed(_ event.EventTypeServerClosedData) {
 	c.close()
 	log.Info("output/client", "Received ServerClosed event, disconnecting and stopping client...")
 	os.Exit(1)

@@ -9,11 +9,11 @@ import (
 	"os"
 )
 
-type Server struct {
-	Protocol    string
-	ListenPath  string
-	NetListener net.Listener
-	Conns       Connections
+type server struct {
+	protocol    string
+	listenPath  string
+	netListener net.Listener
+	conns       Connections
 
 	// 0 - PlayerChanged
 	// 1 - RateChanged
@@ -23,10 +23,10 @@ type Server struct {
 	// 5 - LyricsChanged
 	// 6 - ActiveLyricChanged
 	// 7 - OverwriteRequired
-	LastEvents []event.Event
+	lastEvents []event.Event
 }
 
-var server Server
+var srv server
 
 func InitServer() {
 	global.Config.M.Lock()
@@ -41,12 +41,12 @@ func InitServer() {
 
 		// If not, we must be in standalone mode, in which case
 		// the communication process will go internally.
-		server = Server{
-			Protocol:    "",
-			ListenPath:  "",
-			NetListener: nil,
-			Conns:       Connections{},
-			LastEvents:  nil,
+		srv = server{
+			protocol:    "",
+			listenPath:  "",
+			netListener: nil,
+			conns:       Connections{},
+			lastEvents:  nil,
 		}
 
 		global.Config.M.Unlock()
@@ -72,68 +72,70 @@ func InitServer() {
 		log.Fatal("output/server", "An error occured when trying to start a server: "+err.Error())
 	}
 
-	server = Server{
-		Protocol:    protocol,
-		ListenPath:  listenPath,
-		NetListener: l,
-		Conns:       Connections{Map: make(map[uint]net.Conn), FirstFreeSlot: 0},
-		LastEvents:  makeDefaultLastEvents(),
+	srv = server{
+		protocol:    protocol,
+		listenPath:  listenPath,
+		netListener: l,
+		conns:       Connections{Map: make(map[uint]net.Conn), FirstFreeSlot: 0},
+		lastEvents:  makeDefaultLastEvents(),
 	}
 
 	go func() {
 		for {
-			conn, err := server.NetListener.Accept()
-			server.Conns.M.Lock()
+			conn, err := srv.netListener.Accept()
+			log.Debug("output/server", "A client connected")
+			srv.conns.M.Lock()
 			if err != nil {
 				log.Error("output/server", "Failed to accept a connection: "+err.Error())
 			}
-			server.Conns.Map[server.Conns.FirstFreeSlot] = conn
-			server.Conns.M.Unlock()
-			go server.Conns.FindFirstAvailableSlot()
-			go server.sendLastEvents()
+			f := srv.conns.FirstFreeSlot
+			srv.conns.Map[f] = conn
+			srv.conns.M.Unlock()
+			go srv.sendLastEventsTo(f)
+			go srv.conns.FindFirstAvailableSlot()
 		}
 	}()
 }
 
 func ReceiveEvent(e event.Event) {
-	server.handleEvent(e)
+	srv.handleEvent(e)
 }
 
-func (s *Server) handleEvent(e event.Event) {
+func (s *server) handleEvent(e event.Event) {
 	if e.Type == event.EventTypeServerClosed {
 		log.Info("output/server", "Start closing the server...")
-		for i, c := range s.Conns.Map {
+		for i, c := range s.conns.Map {
 			c.Close()
-			delete(s.Conns.Map, i)
+			delete(s.conns.Map, i)
 		}
-		if server.Protocol == "unix" {
-			os.Remove(s.ListenPath)
+		if srv.protocol == "unix" {
+			os.Remove(s.listenPath)
 		}
 		return
 	}
 
 	switch e.Type {
 	case event.EventTypePlayerChanged:
-		s.LastEvents[0] = e
+		s.lastEvents[0] = e
 	case event.EventTypeRateChanged:
-		s.LastEvents[1] = e
+		s.lastEvents[1] = e
 	case event.EventTypeSongChanged:
-		s.LastEvents[2] = e
+		s.lastEvents[2] = e
 	case event.EventTypePlaybackStatusChanged:
-		s.LastEvents[3] = e
+		s.lastEvents[3] = e
 	case event.EventTypeLyricsStateChanged:
-		s.LastEvents[4] = e
+		s.lastEvents[4] = e
 	case event.EventTypeLyricsChanged:
-		s.LastEvents[5] = e
+		s.lastEvents[5] = e
 	case event.EventTypeActiveLyricChanged:
-		s.LastEvents[6] = e
+		s.lastEvents[6] = e
 	case event.EventTypeOverwriteRequired:
-		s.LastEvents[7] = e
+		s.lastEvents[7] = e
 	}
 
 	s.sendEvent(e)
 }
 
 func CloseServer() {
-	server.handleEvent(event.Event{Type: event.EventTypeServerClosed, Data: event.EventTypeServerClosedData{}})
+	srv.handleEvent(event.Event{Type: event.EventTypeServerClosed, Data: event.EventTypeServerClosedData{}})
 }

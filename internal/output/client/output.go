@@ -16,7 +16,7 @@ import (
 // writes it to outputDestination. If the outputDestination
 // is not related to std, then does its best to ensure the
 // output is an atomic operation by using temp files.
-func (c *Client) output() {
+func (c *client) output() {
 	if c.pendingText == "" {
 		if !c.instrumentalActive {
 			c.instrumentalActive = true
@@ -36,7 +36,7 @@ func (c *Client) output() {
 	c.write()
 }
 
-func (c *Client) write() {
+func (c *client) write() {
 	global.Config.M.Lock()
 	global.Player.M.Lock()
 
@@ -72,7 +72,7 @@ func (c *Client) write() {
 
 // instrumentalLoop starts a loop of writing instrumental notes
 // until the next lyric shows up.
-func (c *Client) instrumentalLoop() {
+func (c *client) instrumentalLoop() {
 	i := 1
 	instrumentalGen := func() (out string, stopWritingAfter bool) {
 		global.Config.M.Lock()

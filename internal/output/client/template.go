@@ -7,13 +7,13 @@ import (
 )
 
 // formatToTemplate formats the output to the Template configuration option.
-func (c *Client) formatToTemplate() string {
+func (c *client) formatToTemplate() string {
 	return c.templateReplacer.Replace(global.Config.C.ClientOutput.Template)
 }
 
 // formatLyric formats the pending lyric-only string to be displayed
 // in accordance with the text format configuration.
-func (c *Client) formatLyric(index int, mult int) string {
+func (c *client) formatLyric(index int, mult int) string {
 	global.Config.M.Lock()
 	defer global.Config.M.Unlock()
 	global.Player.M.Lock()
