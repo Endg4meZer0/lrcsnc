@@ -108,29 +108,31 @@ func (s *server) handleEvent(e event.Event) {
 			c.Close()
 			delete(s.conns.Map, i)
 		}
-		if srv.protocol == "unix" {
+		if s.protocol == "unix" {
 			os.Remove(s.listenPath)
 		}
 		return
 	}
 
-	switch e.Type {
-	case event.EventTypePlayerChanged:
-		s.lastEvents[0] = e
-	case event.EventTypeRateChanged:
-		s.lastEvents[1] = e
-	case event.EventTypeSongChanged:
-		s.lastEvents[2] = e
-	case event.EventTypePlaybackStatusChanged:
-		s.lastEvents[3] = e
-	case event.EventTypeLyricsStateChanged:
-		s.lastEvents[4] = e
-	case event.EventTypeLyricsChanged:
-		s.lastEvents[5] = e
-	case event.EventTypeActiveLyricChanged:
-		s.lastEvents[6] = e
-	case event.EventTypeOverwriteRequired:
-		s.lastEvents[7] = e
+	if s.protocol != "" {
+		switch e.Type {
+		case event.EventTypePlayerChanged:
+			s.lastEvents[0] = e
+		case event.EventTypeRateChanged:
+			s.lastEvents[1] = e
+		case event.EventTypeSongChanged:
+			s.lastEvents[2] = e
+		case event.EventTypePlaybackStatusChanged:
+			s.lastEvents[3] = e
+		case event.EventTypeLyricsStateChanged:
+			s.lastEvents[4] = e
+		case event.EventTypeLyricsChanged:
+			s.lastEvents[5] = e
+		case event.EventTypeActiveLyricChanged:
+			s.lastEvents[6] = e
+		case event.EventTypeOverwriteRequired:
+			s.lastEvents[7] = e
+		}
 	}
 
 	s.sendEvent(e)
