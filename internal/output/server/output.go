@@ -26,9 +26,11 @@ func (s *Server) sendEvent(e event.Event) {
 		c.SetWriteDeadline(time.Now().Add(500 * time.Millisecond))
 		_, err := c.Write(append(d, byte('\n')))
 		if errors.Is(err, syscall.EPIPE) || errors.Is(err, net.ErrClosed) || errors.Is(err, io.EOF) {
+log.Debug("output/server", "A client disconnected.")
 			delete(s.Conns.Map, i)
 		}
 		if errors.Is(err, syscall.ETIMEDOUT) {
+			log.Debug("output/server", "A client timed out. Disconnecting...")
 			c.Close()
 			delete(s.Conns.Map, i)
 		}
