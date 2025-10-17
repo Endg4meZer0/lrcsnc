@@ -20,7 +20,7 @@ func (s *server) sendEvent(e event.Event) {
 
 	d, err := json.Marshal(e)
 	if err != nil {
-		log.Fatal("output/server", "SendEventAsync returned error during marshalling data. What's up? Error: "+err.Error())
+		log.Fatal("output/server", "sendEvent returned error during marshalling data. What's up? Error: "+err.Error())
 	}
 	for i, c := range s.conns.Map {
 		c.SetWriteDeadline(time.Now().Add(500 * time.Millisecond))
@@ -42,7 +42,7 @@ func (s *server) sendLastEventsTo(index uint) {
 	for _, e := range s.lastEvents {
 		d, err := json.Marshal(e)
 		if err != nil {
-			log.Fatal("output/server", "SendEventAsync returned error during marshalling data. What's up? Error: "+err.Error())
+			log.Fatal("output/server", "sendEvent returned error during marshalling data. What's up? Error: "+err.Error())
 		}
 		c.SetWriteDeadline(time.Now().Add(1000 * time.Millisecond))
 		_, err = c.Write(append(d, byte('\n')))
