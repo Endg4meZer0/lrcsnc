@@ -14,7 +14,7 @@ import (
 	"lrcsnc/internal/pkg/types"
 )
 
-var timingRegexp = regexp.MustCompile(`(\[[0-9]{2}:[0-9]{2}.[0-9]{2}])+`)
+var timingRegexp = regexp.MustCompile(`(\[[0-9]{2}:[0-9]{2}.[0-9]{1,3}])+`)
 
 type DTO struct {
 	Title        string  `json:"trackName"`
