@@ -29,12 +29,12 @@ if-synced = true
 if-plain = false
 if-instrumental = true
 
-[client-output]
+[client]
 destination = "stdout"
 template = "%text%"
 insert-newline = true
 
-[client-output.format]
+[client.format]
 lyric = "%lyric%%multiplier%"
 multiplier = " (x%value%)"
 not-playing = " Nothing is playing"
@@ -43,7 +43,7 @@ no-synced-lyrics = "󰦨 No synced lyrics!"
 loading-lyrics = "󱥸 Loading..."
 error-message = " An error occured! Check logs for info!"
 
-[client-output.format.instrumental]
+[client.format.instrumental]
 interval = 0.66
 symbol = "󰎇"
 max-symbols = 3

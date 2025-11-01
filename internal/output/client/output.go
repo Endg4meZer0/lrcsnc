@@ -41,7 +41,7 @@ func (c *client) write() {
 	global.Player.M.Lock()
 
 	s := c.formatToTemplate()
-	if global.Config.C.ClientOutput.InsertNewline {
+	if global.Config.C.Client.InsertNewline {
 		s = s + "\n"
 	}
 
@@ -78,8 +78,8 @@ func (c *client) instrumentalLoop() {
 		global.Config.M.Lock()
 		global.Player.M.Lock()
 
-		note := global.Config.C.ClientOutput.Format.Instrumental.Symbol
-		j := int(global.Config.C.ClientOutput.Format.Instrumental.MaxSymbols + 1)
+		note := global.Config.C.Client.Format.Instrumental.Symbol
+		j := int(global.Config.C.Client.Format.Instrumental.MaxSymbols + 1)
 
 		// Only update instrumental stuff if there is an active song
 		if global.Player.P.PlaybackStatus != mprislib.PlaybackStopped {
@@ -87,15 +87,15 @@ func (c *client) instrumentalLoop() {
 
 			switch global.Player.P.Song.LyricsData.LyricsState {
 			case types.LyricsStateSynced, types.LyricsStateInstrumental:
-				stringToPrint = strings.NewReplacer("%lyric%", "", "%multiplier%", "").Replace(global.Config.C.ClientOutput.Format.Lyric)
+				stringToPrint = strings.NewReplacer("%lyric%", "", "%multiplier%", "").Replace(global.Config.C.Client.Format.Lyric)
 			case types.LyricsStatePlain:
-				stringToPrint = global.Config.C.ClientOutput.Format.NoSyncedLyrics
+				stringToPrint = global.Config.C.Client.Format.NoSyncedLyrics
 			case types.LyricsStateNotFound:
-				stringToPrint = global.Config.C.ClientOutput.Format.NoLyrics
+				stringToPrint = global.Config.C.Client.Format.NoLyrics
 			case types.LyricsStateLoading:
-				stringToPrint = global.Config.C.ClientOutput.Format.LoadingLyrics
+				stringToPrint = global.Config.C.Client.Format.LoadingLyrics
 			default:
-				stringToPrint = global.Config.C.ClientOutput.Format.ErrorMessage
+				stringToPrint = global.Config.C.Client.Format.ErrorMessage
 			}
 
 			if len(stringToPrint) != 0 {
@@ -111,7 +111,7 @@ func (c *client) instrumentalLoop() {
 				i = 1
 			}
 		} else {
-			out = global.Config.C.ClientOutput.Format.NotPlaying
+			out = global.Config.C.Client.Format.NotPlaying
 			stopWritingAfter = true
 		}
 		global.Player.M.Unlock()
@@ -130,7 +130,7 @@ func (c *client) instrumentalLoop() {
 		return
 	}
 
-	instrumentalTicker := time.NewTicker(time.Duration(global.Config.C.ClientOutput.Format.Instrumental.Interval*1000) * time.Millisecond)
+	instrumentalTicker := time.NewTicker(time.Duration(global.Config.C.Client.Format.Instrumental.Interval*1000) * time.Millisecond)
 	for range instrumentalTicker.C {
 		if !c.instrumentalActive {
 			instrumentalTicker.Stop()

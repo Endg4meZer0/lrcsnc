@@ -20,16 +20,16 @@ func (c *client) isOutputStd() bool {
 // The write check is usually performed at config validation step,
 // but it's good to have it here too.
 func (c *client) changeOutput() error {
-	newDest, err := os.OpenFile(global.Config.C.ClientOutput.Destination, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	newDest, err := os.OpenFile(global.Config.C.Client.Destination, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Error("output/client", "Error opening new output destination file, falling back to stdout. More: "+err.Error())
-		global.Config.C.ClientOutput.Destination = c.outputPath
+		global.Config.C.Client.Destination = c.outputPath
 		return err
 	} else {
 		r := strings.NewReplacer(
 			"{pid}", strconv.Itoa(os.Getpid()),
 		)
-		c.tempFile = r.Replace(global.Config.C.ClientOutput.Destination + ".{pid}.tmp")
+		c.tempFile = r.Replace(global.Config.C.Client.Destination + ".{pid}.tmp")
 		// We'll try to open temp file here to see if it even works
 		_, err := os.OpenFile(c.tempFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 		if err != nil {
@@ -37,7 +37,7 @@ func (c *client) changeOutput() error {
 		}
 
 		c.outputDestination = newDest
-		c.outputPath = global.Config.C.ClientOutput.Destination
+		c.outputPath = global.Config.C.Client.Destination
 	}
 
 	return nil

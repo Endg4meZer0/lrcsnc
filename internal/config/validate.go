@@ -52,32 +52,32 @@ func Validate(c *structs.Config) (errs ValidationErrors) {
 	}
 
 	// Check if client's output's destination is writeable if it's not stdout
-	if !c.Net.IsServer && c.ClientOutput.Destination != "stdout" && !isPathWriteable(c.ClientOutput.Destination) {
+	if !c.Net.IsServer && c.Client.Destination != "stdout" && !isPathWriteable(c.Client.Destination) {
 		errs = append(errs, ValidationError{
 			Path:    "client-output/destination",
-			Message: fmt.Sprintf("'%s' is not a writeable path. Please make sure the path exists and is writeable", c.ClientOutput.Destination),
+			Message: fmt.Sprintf("'%s' is not a writeable path. Please make sure the path exists and is writeable", c.Client.Destination),
 			Fatal:   true,
 		})
 	}
 
 	// Check if the instrumental interval is set to <0.1s
-	if !c.Net.IsServer && c.ClientOutput.Format.Instrumental.Interval < 0.1 {
+	if !c.Net.IsServer && c.Client.Format.Instrumental.Interval < 0.1 {
 		errs = append(errs, ValidationError{
 			Path:    "client-output/format/instrumental/interval",
-			Message: fmt.Sprintf("'%f' is not a valid value. Using the possible minimum instead (0.1s)", c.ClientOutput.Format.Instrumental.Interval),
+			Message: fmt.Sprintf("'%f' is not a valid value. Using the possible minimum instead (0.1s)", c.Client.Format.Instrumental.Interval),
 			Fatal:   false,
 		})
-		c.ClientOutput.Format.Instrumental.Interval = 0.1
+		c.Client.Format.Instrumental.Interval = 0.1
 	}
 
 	// Check if max symbols is less than 1
-	if !c.Net.IsServer && c.ClientOutput.Format.Instrumental.MaxSymbols < 1 {
+	if !c.Net.IsServer && c.Client.Format.Instrumental.MaxSymbols < 1 {
 		errs = append(errs, ValidationError{
 			Path:    "client-output/format/instrumental/max-symbols",
-			Message: fmt.Sprintf("'%d' is not a valid value. Using the possible minimum instead (1)", c.ClientOutput.Format.Instrumental.MaxSymbols),
+			Message: fmt.Sprintf("'%d' is not a valid value. Using the possible minimum instead (1)", c.Client.Format.Instrumental.MaxSymbols),
 			Fatal:   false,
 		})
-		c.ClientOutput.Format.Instrumental.MaxSymbols = 1
+		c.Client.Format.Instrumental.MaxSymbols = 1
 	}
 
 	return

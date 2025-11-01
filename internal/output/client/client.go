@@ -70,7 +70,7 @@ func InitClient() {
 	}
 
 	// Initial check for config's output destination
-	if global.Config.C.ClientOutput.Destination != "stdout" {
+	if global.Config.C.Client.Destination != "stdout" {
 		cl.changeOutput()
 	} else {
 		cl.outputDestination = os.Stdout
@@ -116,9 +116,9 @@ func (c *client) handleEvent(e event.Event) {
 		c.handleServerClosed(e.Data.(event.EventTypeServerClosedData))
 	case event.EventTypeConfigReloaded:
 		global.Config.M.Lock()
-		if global.Config.C.ClientOutput.Destination != "stdout" && global.Config.C.ClientOutput.Destination != cl.outputPath {
+		if global.Config.C.Client.Destination != "stdout" && global.Config.C.Client.Destination != cl.outputPath {
 			cl.changeOutput()
-		} else if global.Config.C.ClientOutput.Destination == "stdout" {
+		} else if global.Config.C.Client.Destination == "stdout" {
 			cl.outputDestination = os.Stdout
 			cl.outputPath = "/dev/stdout"
 		}

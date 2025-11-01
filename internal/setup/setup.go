@@ -125,7 +125,7 @@ func Setup() {
 			log.Error("setup", fmt.Sprintf("The provided output file path (%v) is invalid and will be ignored. Error: %v", opts.ClientOutputFilePath, err))
 		} else {
 			k.Close()
-			global.Config.C.ClientOutput.Destination = opts.ClientOutputFilePath
+			global.Config.C.Client.Destination = opts.ClientOutputFilePath
 			// The output is not initialized yet, so no events are sent to the output controller
 		}
 	}

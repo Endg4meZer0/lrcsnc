@@ -17,10 +17,10 @@ type Config struct {
 	Lyrics LyricsConfig `toml:"lyrics"`
 	// Cache config has an "enabled" toggle, dir path and life span
 	Cache CacheConfig `toml:"cache"`
-	// ClientOutput config has lots of personalized settings for the
+	// Client config has lots of personalized settings for the
 	// lrcsnc's native client that is used in standalone and client modes.
 	// Stuff like what kind of output should be going from lrcsnc is described here.
-	ClientOutput ClientOutputConfig `toml:"client-output"`
+	Client ClientConfig `toml:"client"`
 }
 
 // LEVEL 1
@@ -58,7 +58,7 @@ type CacheConfig struct {
 	StoreCondition CacheStoreConditionConfig `toml:"store-condition"`
 }
 
-type ClientOutputConfig struct {
+type ClientConfig struct {
 	Destination   string             `toml:"destination"`
 	Template      string             `toml:"template"`
 	InsertNewline bool               `toml:"insert-newline"`

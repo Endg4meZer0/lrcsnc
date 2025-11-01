@@ -8,7 +8,7 @@ import (
 
 // formatToTemplate formats the output to the Template configuration option.
 func (c *client) formatToTemplate() string {
-	return c.templateReplacer.Replace(global.Config.C.ClientOutput.Template)
+	return c.templateReplacer.Replace(global.Config.C.Client.Template)
 }
 
 // formatLyric formats the pending lyric-only string to be displayed
@@ -28,12 +28,12 @@ func (c *client) formatLyric(mult int) string {
 	// Calculating the multiplier value
 	multiplier := ""
 	if mult > 1 {
-		multiplier = strings.ReplaceAll(global.Config.C.ClientOutput.Format.Multiplier, "%value%", strconv.Itoa(mult))
+		multiplier = strings.ReplaceAll(global.Config.C.Client.Format.Multiplier, "%value%", strconv.Itoa(mult))
 	}
 	replacer := strings.NewReplacer(
 		"%lyric%", c.pendingText,
 		"%multiplier%", multiplier,
 	)
 
-	return replacer.Replace(global.Config.C.ClientOutput.Format.Lyric)
+	return replacer.Replace(global.Config.C.Client.Format.Lyric)
 }
