@@ -4,12 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [[0.2.0](https://github.com/Endg4meZer0/lrcsnc/releases/tag/v0.2.0)] - 2025-10-##
+## [[0.1.1](https://github.com/Endg4meZer0/lrcsnc/releases/tag/v0.2.0)] - 2025-10-##
 ### Added
-- Client-server communication is realized: now lrcsnc can be launched in server-only (`-l` with `-s`) or client-only (`-l`) mode using UNIX sockets or TCP protocol. Standalone mode is still available, and is a default option.
+- Client-server communication is realized: now lrcsnc can be launched in server-only, client-only, or standalone mode. Connections are made using UNIX sockets or TCP protocol. Standalone mode remains a default option and doesn't require any connection.
+
+    Corresponding configuration and flag options were added: the `-s` (server flag), `-l` (listen at), `-p` (protocol to use), and a whole `[net]` section in config file for consistent connection configurations (more at wiki).
 ### Changed
-- In the output the plain and JSON variants were replaced by templates and formats: you can do any kind of output now by using the `template` config option and keys like `%text%`, `%title%` and others (check wiki for more).
-- Store condition config option was changed from byte set to a more human-readable TOML submap.
+- Due to client-server communication addition, the idea of TUI was completely scrapped, and so the remnants in configuration sections: the `[output]` section is now called `[client]`, and the `[output.piped]` section was removed completely as it is obsolete. The members of `[output.piped]` section were moved directly to `[client]` section.
+- The plain and JSON variants were replaced by templates and formats: you can do any kind of output now by using the `template` config option and keys like `%text%`, `%title%` and others (check wiki for more).
+- Store condition config option was changed from byte set to a more human-readable table.
     Was:
     ```
     [cache]
