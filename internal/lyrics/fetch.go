@@ -10,14 +10,14 @@ import (
 	errs "lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
-	"lrcsnc/internal/pkg/structs"
+	playerStructs "lrcsnc/internal/pkg/structs/player"
 )
 
 // Fetch retrieves the lyrics data for the current song.
 // It first checks if caching is enabled and attempts to retrieve the lyrics from the cache.
 // If the lyrics are not found in the cache, it fetches the lyrics from the configured lyrics provider.
 // If the lyrics are successfully retrieved and caching is enabled, it stores the lyrics in the cache.
-func Fetch() (structs.LyricsData, error) {
+func Fetch() (playerStructs.LyricsData, error) {
 	global.Player.M.Lock()
 	song := global.Player.P.Song
 	global.Player.M.Unlock()

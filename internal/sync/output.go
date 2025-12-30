@@ -7,7 +7,7 @@ import (
 	"lrcsnc/internal/output/pkg/event"
 	"lrcsnc/internal/output/server"
 	"lrcsnc/internal/pkg/global"
-	"lrcsnc/internal/pkg/structs"
+	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
 	"lrcsnc/internal/pkg/util"
 
@@ -35,7 +35,7 @@ func lyricsSynchronizer() {
 				Type: event.EventTypeActiveLyricChanged,
 				Data: event.EventTypeActiveLyricChangedData{
 					Index:        -1,
-					Lyric:        structs.Lyric{Timing: 0, Text: ""},
+					Lyric:        playerStructs.Lyric{Timing: 0, Text: ""},
 					Multiplier:   0,
 					TimeUntilEnd: 0,
 					Resync:       resyncFlag,
@@ -61,7 +61,7 @@ func lyricsSynchronizer() {
 			lyricsTimerDuration := time.Duration(int64(math.Abs(nextLyricTiming-global.Player.P.Position)*1000)) * time.Millisecond
 
 			if currentLyricTiming == -1 || (global.Player.P.PlaybackStatus == mpris.PlaybackPlaying && writtenTiming != currentLyricTiming) {
-				lyric := structs.Lyric{Timing: 0, Text: ""}
+				lyric := playerStructs.Lyric{Timing: 0, Text: ""}
 				if newLyricIndex >= 0 && newLyricIndex < len(global.Player.P.Song.LyricsData.Lyrics) {
 					lyric = global.Player.P.Song.LyricsData.Lyrics[newLyricIndex]
 				}

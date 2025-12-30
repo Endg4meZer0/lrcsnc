@@ -1,8 +1,8 @@
 package util
 
-import "lrcsnc/internal/pkg/structs"
+import playerStructs "lrcsnc/internal/pkg/structs/player"
 
-func CalculateMultiplier(lyrics []structs.Lyric, ind int) (value int) {
+func CalculateMultiplier(lyrics []playerStructs.Lyric, ind int) (value int) {
 	if ind == -1 {
 		return 0
 	}

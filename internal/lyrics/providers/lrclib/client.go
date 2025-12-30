@@ -10,7 +10,7 @@ import (
 
 	"lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/log"
-	"lrcsnc/internal/pkg/structs"
+	playerStructs "lrcsnc/internal/pkg/structs/player"
 )
 
 type lrcLibURLType int
@@ -24,7 +24,7 @@ const (
 	lrcLibURLTypeSearchWithSingleArtist
 )
 
-func makeURL(song structs.Song, t lrcLibURLType) (out *url.URL) {
+func makeURL(song playerStructs.Song, t lrcLibURLType) (out *url.URL) {
 	rawURL := "http://lrclib.net/api/"
 	switch t {
 	case lrcLibURLTypeGet:

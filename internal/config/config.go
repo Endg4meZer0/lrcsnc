@@ -10,13 +10,13 @@ import (
 	errs "lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
-	"lrcsnc/internal/pkg/structs"
+	configStruct "lrcsnc/internal/pkg/structs/config"
 
 	"github.com/pelletier/go-toml/v2"
 )
 
 func Parse(configFile []byte) error {
-	var config structs.Config
+	var config configStruct.Config
 
 	if err := toml.Unmarshal(configFile, &config); err != nil {
 		var decodeErr *toml.DecodeError

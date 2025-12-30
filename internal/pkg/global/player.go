@@ -1,7 +1,7 @@
 package global
 
 import (
-	"lrcsnc/internal/pkg/structs"
+	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
 	"sync"
 
@@ -10,14 +10,14 @@ import (
 
 var Player = struct {
 	M sync.Mutex
-	P structs.Player
+	P playerStructs.Player
 }{
-	P: structs.Player{
+	P: playerStructs.Player{
 		PlaybackStatus: mpris.PlaybackStopped,
 		Position:       0.0,
 		Rate:           1.0,
-		Song: structs.Song{
-			LyricsData: structs.LyricsData{
+		Song: playerStructs.Song{
+			LyricsData: playerStructs.LyricsData{
 				LyricsState: types.LyricsStateUnknown,
 			},
 		},

@@ -12,21 +12,21 @@ import (
 	"lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
-	"lrcsnc/internal/pkg/structs"
+	playerStructs "lrcsnc/internal/pkg/structs/player"
 )
 
 // Fetch retrieves the cached lyrics data for a given song.
 // It first checks if the cache is enabled. If not, it returns an empty LyricsData and CacheStateDisabled.
-// If the cache is enabled, it constructs the cache file path using the song ID.
+// If the cache is enabled, it conplayerStructs the cache file path using the song ID.
 // It attempts to read the cache file and unmarshal its contents into a LyricsData struct.
 // If successful, it checks if the cache has expired based on the configured cache lifespan.
 // It returns the cached data along with the appropriate CacheState (Active, Expired, or NonExistant).
-func Fetch(song *structs.Song) (structs.LyricsData, CacheState) {
+func Fetch(song *playerStructs.Song) (playerStructs.LyricsData, CacheState) {
 	global.Config.M.Lock()
 	defer global.Config.M.Unlock()
 
 	if !global.Config.C.Cache.Enabled {
-		return structs.LyricsData{}, CacheStateDisabled
+		return playerStructs.LyricsData{}, CacheStateDisabled
 	}
 	cacheDirectory := getCacheDir()
 
@@ -36,11 +36,11 @@ func Fetch(song *structs.Song) (structs.LyricsData, CacheState) {
 	log.Debug("cache/Fetch", fmt.Sprintf("Fetching cache for song %v - %v under the name %v.json", strings.Join(song.Artists, ", "), song.Title, filename))
 
 	if file, err := os.ReadFile(fullPath); err == nil {
-		var cachedData structs.LyricsData
+		var cachedData playerStructs.LyricsData
 		err = json.Unmarshal(file, &cachedData)
 		if err != nil {
 			log.Error("cache/Fetch", "Couldn't unmarshal the data: "+err.Error())
-			return structs.LyricsData{}, CacheStateNonExistant
+			return playerStructs.LyricsData{}, CacheStateNonExistant
 		}
 
 		log.Debug("cache/Fetch", "Done")
@@ -59,12 +59,12 @@ func Fetch(song *structs.Song) (structs.LyricsData, CacheState) {
 		}
 	} else {
 		log.Debug("cache/Fetch", "Cache does not exist (in the end it doesn't even matter)")
-		return structs.LyricsData{}, CacheStateNonExistant
+		return playerStructs.LyricsData{}, CacheStateNonExistant
 	}
 }
 
 // Store saves the lyrics data of a given song to a JSON file in the cache directory.
-func Store(song *structs.Song) error {
+func Store(song *playerStructs.Song) error {
 	global.Config.M.Lock()
 	cacheDirectory := getCacheDir()
 	global.Config.M.Unlock()
@@ -102,7 +102,7 @@ func Store(song *structs.Song) error {
 //
 // It's not really used anywhere for now, only in cache unit test,
 // but it was useful in the past and might be again in the future.
-func Remove(song *structs.Song) error {
+func Remove(song *playerStructs.Song) error {
 	global.Config.M.Lock()
 	cacheDirectory := getCacheDir()
 	global.Config.M.Unlock()
@@ -127,7 +127,7 @@ func getCacheDir() string {
 	return os.ExpandEnv(global.Config.C.Cache.Dir)
 }
 
-func getFilename(song *structs.Song) string {
+func getFilename(song *playerStructs.Song) string {
 	h := fnv.New64a()
 	h.Write(fmt.Appendf([]byte{}, "%v.%v.%v.%v",
 		song.Title,

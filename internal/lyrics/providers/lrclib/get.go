@@ -5,15 +5,15 @@ import (
 
 	"lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/log"
-	"lrcsnc/internal/pkg/structs"
+	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
 )
 
-func (l Provider) Get(song structs.Song) (structs.LyricsData, error) {
+func (l Provider) Get(song playerStructs.Song) (playerStructs.LyricsData, error) {
 	var getURL *url.URL
 	var body []byte
 	var err error
-	var res structs.LyricsData
+	var res playerStructs.LyricsData
 
 	log.Debug("lyrics/providers/lrclib/Get", "Trying to fetch lyrics with a /get request full with details")
 
@@ -99,5 +99,5 @@ func (l Provider) Get(song structs.Song) (structs.LyricsData, error) {
 	log.Debug("lyrics/providers/lrclib/Get", "Failed; the lyrics for this song don't exist")
 
 	// If nothing is found, return a not found state
-	return structs.LyricsData{LyricsState: types.LyricsStateNotFound}, errors.ErrLyricsNotFound
+	return playerStructs.LyricsData{LyricsState: types.LyricsStateNotFound}, errors.ErrLyricsNotFound
 }

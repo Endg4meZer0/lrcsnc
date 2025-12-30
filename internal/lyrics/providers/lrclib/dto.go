@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"lrcsnc/internal/pkg/errors"
-	"lrcsnc/internal/pkg/structs"
+	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
 )
 
@@ -26,14 +26,14 @@ type DTO struct {
 	SyncedLyrics string  `json:"syncedLyrics"`
 }
 
-func dtoListToLyricsData(song structs.Song, bytes []byte) (structs.LyricsData, error) {
+func dtoListToLyricsData(song playerStructs.Song, bytes []byte) (playerStructs.LyricsData, error) {
 	dtos, err := parseDTOs(bytes)
 	if err != nil {
-		return structs.LyricsData{LyricsState: types.LyricsStateUnknown}, err
+		return playerStructs.LyricsData{LyricsState: types.LyricsStateUnknown}, err
 	}
 
 	if len(dtos) == 0 {
-		return structs.LyricsData{LyricsState: types.LyricsStateNotFound}, errors.ErrLyricsNotFound
+		return playerStructs.LyricsData{LyricsState: types.LyricsStateNotFound}, errors.ErrLyricsNotFound
 	}
 
 	dtos = removeMismatches(song, dtos)
@@ -42,7 +42,7 @@ func dtoListToLyricsData(song structs.Song, bytes []byte) (structs.LyricsData, e
 		return lyricsData, nil
 	}
 
-	return structs.LyricsData{LyricsState: types.LyricsStateNotFound}, errors.ErrLyricsNotFound
+	return playerStructs.LyricsData{LyricsState: types.LyricsStateNotFound}, errors.ErrLyricsNotFound
 }
 
 func parseDTOs(data []byte) ([]DTO, error) {
@@ -60,7 +60,7 @@ func parseDTOs(data []byte) ([]DTO, error) {
 	return []DTO{out}, nil
 }
 
-func (dto DTO) toLyricsData() (out structs.LyricsData) {
+func (dto DTO) toLyricsData() (out playerStructs.LyricsData) {
 	if !dto.Instrumental && dto.PlainLyrics == "" && dto.SyncedLyrics == "" {
 		out.LyricsState = types.LyricsStateUnknown
 	}
@@ -72,9 +72,9 @@ func (dto DTO) toLyricsData() (out structs.LyricsData) {
 
 	if dto.PlainLyrics != "" && dto.SyncedLyrics == "" {
 		lyrics := strings.Split(dto.PlainLyrics, "\n")
-		out.Lyrics = make([]structs.Lyric, len(lyrics))
+		out.Lyrics = make([]playerStructs.Lyric, len(lyrics))
 		for i, l := range lyrics {
-			out.Lyrics[i] = structs.Lyric{Text: sanitizeLyric(l)}
+			out.Lyrics[i] = playerStructs.Lyric{Text: sanitizeLyric(l)}
 		}
 
 		out.LyricsState = types.LyricsStatePlain
@@ -87,11 +87,11 @@ func (dto DTO) toLyricsData() (out structs.LyricsData) {
 	return
 }
 
-func parseSyncedLyrics(lyrics string) (out []structs.Lyric) {
+func parseSyncedLyrics(lyrics string) (out []playerStructs.Lyric) {
 	hasRepetitiveLyrics := false
 	syncedLyrics := strings.Split(lyrics, "\n")
 
-	out = make([]structs.Lyric, 0, len(syncedLyrics))
+	out = make([]playerStructs.Lyric, 0, len(syncedLyrics))
 
 	for _, lyric := range syncedLyrics {
 		timings := timingRegexp.FindAllString(lyric, -1)
@@ -108,7 +108,7 @@ func parseSyncedLyrics(lyrics string) (out []structs.Lyric) {
 			if timing == -1 {
 				continue
 			}
-			out = append(out, structs.Lyric{
+			out = append(out, playerStructs.Lyric{
 				Timing: timing,
 				Text:   lyric,
 			})
@@ -116,7 +116,7 @@ func parseSyncedLyrics(lyrics string) (out []structs.Lyric) {
 	}
 
 	if hasRepetitiveLyrics {
-		slices.SortFunc(out, func(i, j structs.Lyric) int {
+		slices.SortFunc(out, func(i, j playerStructs.Lyric) int {
 			return cmp.Compare(i.Timing, j.Timing)
 		})
 	}
@@ -146,7 +146,7 @@ func parseTiming(timeTag string) float64 {
 	return minutes*60.0 + seconds
 }
 
-func removeMismatches(song structs.Song, dtos []DTO) []DTO {
+func removeMismatches(song playerStructs.Song, dtos []DTO) []DTO {
 	if len(dtos) == 0 {
 		return dtos
 	}

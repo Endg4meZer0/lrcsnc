@@ -1,13 +1,13 @@
 package util
 
 import (
-	"lrcsnc/internal/pkg/structs"
+	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/util"
 	"testing"
 )
 
 func TestCalcMultiplier(t *testing.T) {
-	test1 := []structs.Lyric{
+	test1 := []playerStructs.Lyric{
 		{
 			Timing: 0.11,
 			Text:   "BUGAGA",
@@ -33,6 +33,6 @@ func TestCalcMultiplier(t *testing.T) {
 		t.Errorf("[tests/util/TestCalcMultiplier] ERROR: mismatch, got %v instead of 2", n)
 	}
 	if n := util.CalculateMultiplier(test1, 3); n != 0 {
-		t.Errorf("[tests/util/TestCalcMultiplier] ERROR: mismatch, got %v instead of 2", n)
+		t.Errorf("[tests/util/TestCalcMultiplier] ERROR: mismatch, got %v instead of 0", n)
 	}
 }

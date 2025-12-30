@@ -3,7 +3,7 @@ package cache_test
 import (
 	"lrcsnc/internal/cache"
 	"lrcsnc/internal/pkg/global"
-	"lrcsnc/internal/pkg/structs"
+	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
 	"testing"
 )
@@ -11,13 +11,13 @@ import (
 func TestStoreGetCycle(t *testing.T) {
 	global.Config.C.Cache.StoreCondition.IfSynced = true
 	global.Config.C.Cache.Dir = "$HOME/.cache/lrcsnc"
-	testSong := structs.Song{
+	testSong := playerStructs.Song{
 		Title:    "Is This A Test?",
 		Artists:  []string{"Endg4me_"},
 		Album:    "lrcsnc",
 		Duration: 12.12,
-		LyricsData: structs.LyricsData{
-			Lyrics: []structs.Lyric{
+		LyricsData: playerStructs.LyricsData{
+			Lyrics: []playerStructs.Lyric{
 				{Timing: 4.12, Text: "Pam-pam-pampararam"},
 				{Timing: 7.54, Text: "Pam-pam-pam-param-pamparam"},
 			},

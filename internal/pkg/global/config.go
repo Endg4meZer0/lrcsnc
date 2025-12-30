@@ -3,12 +3,12 @@ package global
 import (
 	"sync"
 
-	"lrcsnc/internal/pkg/structs"
+	configStruct "lrcsnc/internal/pkg/structs/config"
 )
 
 var Config = struct {
 	M sync.Mutex
-	C structs.Config
+	C configStruct.Config
 
 	Path string
 }{}

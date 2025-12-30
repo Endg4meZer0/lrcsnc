@@ -1,7 +1,7 @@
 package event
 
 import (
-	"lrcsnc/internal/pkg/structs"
+	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
 
 	"github.com/Endg4meZer0/go-mpris"
@@ -12,7 +12,7 @@ type EventTypeActiveLyricChangedData struct {
 	Index int
 	// Lyric is lyric itself. If the lyric is empty, it is
 	// considered an instrumental lyric.
-	Lyric structs.Lyric
+	Lyric playerStructs.Lyric
 	// Multiplier is the number of times the lyric repeated itself
 	// in the text up to this moment.
 	Multiplier int
@@ -50,7 +50,7 @@ type EventTypeLyricsStateChangedData struct {
 }
 
 type EventTypeLyricsChangedData struct {
-	Lyrics []structs.Lyric
+	Lyrics []playerStructs.Lyric
 }
 
 type EventTypeOverwriteRequiredData struct {

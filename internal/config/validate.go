@@ -6,7 +6,7 @@ import (
 	"path"
 	"strings"
 
-	"lrcsnc/internal/pkg/structs"
+	configStruct "lrcsnc/internal/pkg/structs/config"
 )
 
 type ValidationError struct {
@@ -21,7 +21,7 @@ func (v ValidationError) Error() string {
 
 type ValidationErrors []ValidationError
 
-func Validate(c *structs.Config) (errs ValidationErrors) {
+func Validate(c *configStruct.Config) (errs ValidationErrors) {
 	errs = make(ValidationErrors, 0)
 
 	// Check whether protocol value is allowed
