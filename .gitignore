@@ -5,6 +5,7 @@
 
 playerctl-lyrics
 lrcsnc
+lrcsnc-dev
 *.txt
 .fuse_hidden*
 test-*
