@@ -15,9 +15,8 @@ provider = "lrclib"
 timing-offset = 0.0
 
 [lyrics.romanization]
-japanese = false
-chinese = false
 korean = false
+chinese = false
 
 [cache]
 enabled = true

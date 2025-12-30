@@ -11,23 +11,17 @@ import (
 
 // Supported languages are listed here
 
-// Language is a bitset of supported languages
+// Language as of right now is a bitset of supported languages
 // (each language has its own bit)
 type Language uint8
 
 const (
-	LanguageDefault  Language = 0b0
-	LanguageJapanese Language = 0b1 << iota
-	LanguageKorean
+	LanguageDefault Language = 0b0
+	LanguageKorean           = 0b1 << iota
 	LanguageChinese
 )
 
 // Unicode range tables accordingly are listed here
-
-var jpUnicodeRangeTable = []*unicode.RangeTable{
-	unicode.Hiragana,
-	unicode.Katakana,
-}
 
 var krUnicodeRangeTable = []*unicode.RangeTable{
 	unicode.Hangul,
@@ -71,25 +65,13 @@ func getLang(lyric playerStructs.Lyric) (lang Language) {
 
 	lang = LanguageDefault
 
-	// The idea of checking Japanese only by Hirogana and Katakana may backfire
-	// if there are actually any songs where some lines contain only kanji.
-	// But I don't seem to come up with any other solution of how to
-	// differentiate between Japanese and Chinese when it comes to complex characters.
-	// So, right now, kanji are detected as Chinese, but only if there were no
-	// Japanese characters in the line already.
-
-	if global.Config.C.Lyrics.Romanization.Japanese {
-		if hasCharsOf(lyric.Text, jpUnicodeRangeTable) {
-			lang |= LanguageJapanese
-		}
-	}
 	if global.Config.C.Lyrics.Romanization.Korean {
 		if hasCharsOf(lyric.Text, krUnicodeRangeTable) {
 			lang |= LanguageKorean
 		}
 	}
-	// Chinese romanization only enables if no Japanese has been detected
-	if global.Config.C.Lyrics.Romanization.Chinese && lang&LanguageJapanese == 0 {
+
+	if global.Config.C.Lyrics.Romanization.Chinese {
 		if hasCharsOf(lyric.Text, zhUnicodeRangeTable) {
 			lang |= LanguageChinese
 		}
@@ -101,8 +83,6 @@ func getLang(lyric playerStructs.Lyric) (lang Language) {
 // Returns a romanized string based on the provided language
 func romanize(str string, lang Language) (out string) {
 	switch {
-	case lang&LanguageJapanese != 0:
-		out = Romanizers[LanguageJapanese].Romanize(str)
 	case lang&LanguageKorean != 0:
 		out = Romanizers[LanguageKorean].Romanize(str)
 	case lang&LanguageChinese != 0:

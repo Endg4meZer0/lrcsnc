@@ -1,13 +1,12 @@
 package romanization
 
 type Config struct {
-	Japanese bool `toml:"japanese"`
-	Chinese  bool `toml:"chinese"`
-	Korean   bool `toml:"korean"`
+	Korean  bool `toml:"korean"`
+	Chinese bool `toml:"chinese"`
 }
 
 // IsEnabled returns true if at least one of the supported romanization options
 // is turned on.
 func (c *Config) IsEnabled() bool {
-	return c.Japanese || c.Chinese || c.Korean
+	return c.Korean || c.Chinese
 }

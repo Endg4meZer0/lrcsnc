@@ -4,12 +4,11 @@ import (
 	"lrcsnc/internal/romanization/langs"
 )
 
-type Romanizer interface{
+type Romanizer interface {
 	Romanize(string) string
 }
 
 var Romanizers map[Language]Romanizer = map[Language]Romanizer{
-	LanguageJapanese: langs.RomanizerJp{},
-	LanguageKorean: langs.RomanizerKr{},
+	LanguageKorean:  langs.RomanizerKr{},
 	LanguageChinese: langs.RomanizerZh{},
 }
