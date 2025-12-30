@@ -3,6 +3,6 @@ package player
 import "lrcsnc/internal/pkg/types"
 
 type LyricsData struct {
-	Lyrics      []Lyric
+	Lyrics      Lyrics
 	LyricsState types.LyricsState
 }
