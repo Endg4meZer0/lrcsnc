@@ -4,16 +4,11 @@ import (
 	"slices"
 	"testing"
 
+	errs "lrcsnc/internal/lyrics/errors"
 	lrclib "lrcsnc/internal/lyrics/providers/lrclib"
-	"lrcsnc/internal/pkg/errors"
 	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
 )
-
-type Response struct {
-	StatusCode int
-	Body       string
-}
 
 // TestGetLyrics tests the ability to get different kinds of
 // lyrics from LrcLib.
@@ -140,7 +135,7 @@ func TestGetLyrics(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := lrclib.Provider{}.Get(tt.song)
-			if err != nil && !(tt.ldata.LyricsState == types.LyricsStateNotFound && err == errors.ErrLyricsNotFound) {
+			if err != nil && !(tt.ldata.LyricsState == types.LyricsStateNotFound && err == errs.NotFound) {
 				t.Errorf("[tests/lyrics/providers/lrclib/get/%v] Error: %v", tt.name, err)
 				return
 			}

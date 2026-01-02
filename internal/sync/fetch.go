@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"lrcsnc/internal/lyrics"
+	errs "lrcsnc/internal/lyrics/errors"
 	"lrcsnc/internal/output/pkg/event"
 	"lrcsnc/internal/output/server"
-	errs "lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/types"
 )
@@ -45,7 +45,7 @@ func lyricFetcher() {
 			thisDownloadStart := lastDownloadStart
 
 			lyricsData, err := lyrics.Fetch()
-			if err != nil && !errors.Is(err, errs.ErrLyricsNotFound) {
+			if err != nil && !errors.Is(err, errs.NotFound) {
 				return
 			}
 

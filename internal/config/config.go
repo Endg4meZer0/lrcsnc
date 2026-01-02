@@ -5,9 +5,10 @@ import (
 	"os"
 	"strings"
 
+	errs "lrcsnc/internal/config/errors"
 	"lrcsnc/internal/output/client"
 	"lrcsnc/internal/output/pkg/event"
-	errs "lrcsnc/internal/pkg/errors"
+	genericErrs "lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
 	configStruct "lrcsnc/internal/pkg/structs/config"
@@ -23,7 +24,7 @@ func Parse(configFile []byte) error {
 		if errors.As(err, &decodeErr) {
 			lines := strings.Join(strings.Split(decodeErr.String(), "\n"), "\n\t")
 			log.Error("config/Parse", "Error parsing the config file: \n\t"+lines)
-			return errs.ErrConfigFileInvalid
+			return errs.FileInvalid
 		}
 	}
 
@@ -40,7 +41,7 @@ func Parse(configFile []byte) error {
 
 	if fatal {
 		log.Error("config/Parse", "Fatal errors in the config were detected during validation.")
-		return errs.ErrConfigFatalValidation
+		return errs.FatalValidation
 	}
 
 	global.Config.M.Lock()
@@ -54,13 +55,13 @@ func Parse(configFile []byte) error {
 func Read(path string) error {
 	if _, err := os.Stat(os.ExpandEnv(path)); os.IsNotExist(err) {
 		log.Error("config/Read", "Config file does not exist or is unreachable.")
-		return errs.ErrFileUnreachable
+		return genericErrs.FileUnreachable
 	}
 
 	configFile, err := os.ReadFile(os.ExpandEnv(path))
 	if err != nil {
 		log.Error("config/Read", "Config file is reachable, but unreadable.")
-		return errs.ErrFileUnreadable
+		return genericErrs.FileUnreadable
 	}
 
 	err = Parse(configFile)
@@ -95,7 +96,7 @@ func Update() {
 
 	if err := Read(global.Config.Path); err != nil {
 		switch {
-		case errors.Is(err, errs.ErrFileUnreachable):
+		case errors.Is(err, genericErrs.FileUnreachable):
 			log.Error("config/Update", "The config file is now unreachable. The configuration will remain the same until restart or until the config file reappears.")
 		default:
 			log.Error("config/Update", "Unknown error: "+err.Error())

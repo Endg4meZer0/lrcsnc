@@ -72,7 +72,7 @@ func Store(song *playerStructs.Song) error {
 	if _, err := os.ReadDir(cacheDirectory); err != nil {
 		err = os.Mkdir(cacheDirectory, 0o744)
 		if err != nil {
-			return errors.ErrDirUnwriteable
+			return errors.DirUnwriteable
 		}
 	}
 
@@ -84,12 +84,12 @@ func Store(song *playerStructs.Song) error {
 	encodedData, err := json.Marshal(song.LyricsData)
 	if err != nil {
 		log.Error("cache/Store", "Failed to marshal the data: "+err.Error())
-		return errors.ErrMarshalFail
+		return errors.MarshalFail
 	}
 
 	if err := os.WriteFile(fullPath, []byte(encodedData), 0o644); err != nil {
 		log.Error("cache/Store", "Failed to write the cache file: "+err.Error())
-		return errors.ErrFileUnwriteable
+		return errors.FileUnwriteable
 	}
 	log.Debug("cache/Store", "Done")
 	return nil
@@ -108,7 +108,7 @@ func Remove(song *playerStructs.Song) error {
 	global.Config.M.Unlock()
 
 	if _, err := os.ReadDir(cacheDirectory); err != nil {
-		return errors.ErrDirUnreachable
+		return errors.DirUnreachable
 	}
 
 	filename := getFilename(song)
@@ -117,7 +117,7 @@ func Remove(song *playerStructs.Song) error {
 
 	if err := os.Remove(fullPath); err != nil {
 		log.Error("cache/Remove", fmt.Sprintf("Couldn't delete the cached data for %v. Maybe the data didn't exist in the first place?", filename))
-		return errors.ErrFileUnreachable
+		return errors.FileUnreachable
 	}
 	log.Debug("cache/Remove", "Done")
 	return nil

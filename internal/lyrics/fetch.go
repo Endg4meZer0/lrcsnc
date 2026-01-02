@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"lrcsnc/internal/cache"
+	errs "lrcsnc/internal/lyrics/errors"
 	"lrcsnc/internal/lyrics/providers"
-	errs "lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
 	playerStructs "lrcsnc/internal/pkg/structs/player"
@@ -36,7 +36,7 @@ func Fetch() (playerStructs.LyricsData, error) {
 
 	res, err := providers.Providers[global.Config.C.Lyrics.Provider].Get(song)
 	if err != nil {
-		if errors.Is(err, errs.ErrLyricsNotFound) {
+		if errors.Is(err, errs.NotFound) {
 			log.Debug("lyrics/fetch", "The lyrics, unfortunately, were not found")
 		} else {
 			log.Error("lyrics/fetch", fmt.Sprintf("Could not get the lyrics: %s", err))
