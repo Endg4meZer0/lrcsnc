@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"syscall"
 	"time"
 
 	"lrcsnc/internal/pkg/types"
@@ -98,5 +99,7 @@ func Error(modulePath string, message string) {
 func Fatal(modulePath string, message string) {
 	fmt.Fprintln(os.Stdout, "["+modulePath+"] "+strings.ToUpper(string(types.LogLevelFatal))+": "+message)
 	fmt.Fprintln(os.Stderr, "["+modulePath+"] "+strings.ToUpper(string(types.LogLevelFatal))+": "+message)
-	os.Exit(1)
+	// An attempt at graceful shutdown
+	//   (I still did not learn contexts...)
+	syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 }
