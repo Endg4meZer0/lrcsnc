@@ -3,65 +3,38 @@ package lrclib
 import (
 	"fmt"
 	"io"
-	"math"
 	"net/http"
 	"net/url"
-	"strings"
+	"os"
+	"time"
 
-	"lrcsnc/internal/pkg/errors"
+	errs "lrcsnc/internal/lyrics/errors"
 	"lrcsnc/internal/pkg/log"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
 )
 
-type lrcLibURLType int
-
-const (
-	lrcLibURLTypeGet lrcLibURLType = iota
-	lrcLibURLTypeGetWithSingleArtist
-	lrcLibURLTypeSearchWithAlbum
-	lrcLibURLTypeSearchWithSingleArtistAndAlbum
-	lrcLibURLTypeSearch
-	lrcLibURLTypeSearchWithSingleArtist
-)
-
-func makeURL(song playerStructs.Song, t lrcLibURLType) (out *url.URL) {
-	rawURL := "http://lrclib.net/api/"
-	switch t {
-	case lrcLibURLTypeGet:
-		rawURL += "get?" + url.PathEscape(fmt.Sprintf("track_name=%v&artist_name=%v&album_name=%v&duration=%v", song.Title, strings.Join(song.Artists, ", "), song.Album, int(math.Ceil(song.Duration))))
-	case lrcLibURLTypeGetWithSingleArtist:
-		rawURL += "get?" + url.PathEscape(fmt.Sprintf("track_name=%v&artist_name=%v&album_name=%v&duration=%v", song.Title, song.Artists[0], song.Album, int(math.Ceil(song.Duration))))
-	case lrcLibURLTypeSearchWithAlbum:
-		rawURL += "search?" + url.PathEscape(fmt.Sprintf("track_name=%v&artist_name=%v&album_name=%v", song.Title, strings.Join(song.Artists, ", "), song.Album))
-	case lrcLibURLTypeSearchWithSingleArtistAndAlbum:
-		rawURL += "search?" + url.PathEscape(fmt.Sprintf("track_name=%v&artist_name=%v&album_name=%v", song.Title, song.Artists[0], song.Album))
-	case lrcLibURLTypeSearch:
-		rawURL += "search?" + url.PathEscape(fmt.Sprintf("track_name=%v&artist_name=%v", song.Title, strings.Join(song.Artists, ", ")))
-	case lrcLibURLTypeSearchWithSingleArtist:
-		rawURL += "search?" + url.PathEscape(fmt.Sprintf("track_name=%v&artist_name=%v", song.Title, song.Artists[0]))
-	default:
-		return nil
-	}
-	out, err := url.Parse(rawURL)
-	if err != nil {
-		log.Error("lyrics/providers/lrclib/makeURL", fmt.Sprintf("Failed to parse string (%v) to URL", rawURL))
-	}
-	return
+var httpClient = http.Client{
+	Timeout: 10 * time.Second,
 }
 
-func sendRequest(link *url.URL) ([]byte, error) {
-	resp, err := http.Get((*link).String())
-	if resp.StatusCode == 404 {
-		return nil, errors.ErrLyricsNotFound
+func requestLyrics(title string, artist string) ([]byte, error) {
+	urlReqPath := "http://lrclib.net/api/search?" + url.PathEscape(fmt.Sprintf("track_name=%v&artist_name=%v", title, artist))
+	_, err := url.Parse(urlReqPath)
+	if err != nil {
+		log.Fatal("lyrics/providers/lrclib/client", fmt.Sprintf("Failed to parse string (%v) to URL; please, report this issue to GitHub. More:\n%v", urlReqPath, err))
+	}
+
+	resp, err := httpClient.Get(urlReqPath)
+	if os.IsTimeout(err) {
+		return nil, errs.ServerTimeout
 	}
 	if err != nil || resp.StatusCode != 200 {
-		return nil, errors.ErrLyricsServerError
+		return nil, errs.ServerError
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		return nil, errors.ErrLyricsBodyReadFail
+		return nil, errs.BodyReadFail
 	}
 	return body, nil
 }

@@ -7,11 +7,12 @@ import (
 )
 
 type Song struct {
-	Title      string
-	Artists    []string
-	Album      string
-	Duration   float64
-	LyricsData LyricsData
+	Title        string
+	Artists      []string
+	Album        string
+	AlbumArtists []string
+	Duration     float64
+	LyricsData   LyricsData
 }
 
 func (s *Song) ID() uint64 {

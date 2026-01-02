@@ -1,6 +1,7 @@
 package mpris
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 
@@ -29,29 +30,6 @@ func ChangePlayer() error {
 		return err
 	}
 	log.Debug("mpris/ChangePlayer", "Current players available in MPRIS: "+strings.Join(players, ", "))
-
-	// A little helper function to filter players
-	playerInFilter := func(player string) bool {
-		global.Config.M.Lock()
-		defer global.Config.M.Unlock()
-		if len(global.Config.C.Player.IncludedPlayers) != 0 {
-			for _, includedPlayer := range global.Config.C.Player.IncludedPlayers {
-				if strings.Contains(player, includedPlayer) {
-					return true
-				}
-			}
-		}
-
-		if len(global.Config.C.Player.ExcludedPlayers) != 0 {
-			for _, excludedPlayer := range global.Config.C.Player.ExcludedPlayers {
-				if strings.Contains(player, excludedPlayer) {
-					return false
-				}
-			}
-		}
-
-		return true
-	}
 
 	// Check if the current player is still alive and kicking
 	if player != nil {
@@ -204,8 +182,15 @@ func ApplyMetadataOntoGlobal(md mpris.Metadata) (err error) {
 	}
 	global.Player.P.Song.Album, err = md.Album()
 	if err != nil {
-		return err
+		log.Debug("mpris/player", fmt.Sprintf("Failed to get album; either player doesn't support this field or there's a coding error. More: %v", err))
+		global.Player.P.Song.Album = ""
 	}
+	global.Player.P.Song.AlbumArtists, err = md.AlbumArtist()
+	if err != nil {
+		log.Debug("mpris/player", fmt.Sprintf("Failed to get album artists; either player doesn't support this field or there's a coding error. More: %v", err))
+		global.Player.P.Song.AlbumArtists = global.Player.P.Song.Artists
+	}
+
 	dur, err := md.Length()
 	if err != nil {
 		return err
@@ -264,4 +249,27 @@ func SetPosition(pos float64) error {
 	}
 
 	return player.SetPosition(int64(pos * 1000 * 1000))
+}
+
+// playerInFilter is a helper function for detecting if the player fits the config's filters
+func playerInFilter(player string) bool {
+	global.Config.M.Lock()
+	defer global.Config.M.Unlock()
+	if len(global.Config.C.Player.IncludedPlayers) != 0 {
+		for _, includedPlayer := range global.Config.C.Player.IncludedPlayers {
+			if strings.Contains(player, includedPlayer) {
+				return true
+			}
+		}
+	}
+
+	if len(global.Config.C.Player.ExcludedPlayers) != 0 {
+		for _, excludedPlayer := range global.Config.C.Player.ExcludedPlayers {
+			if strings.Contains(player, excludedPlayer) {
+				return false
+			}
+		}
+	}
+
+	return true
 }

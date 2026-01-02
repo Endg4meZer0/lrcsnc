@@ -7,6 +7,8 @@ import (
 )
 
 // Configure sets up the lyrics data by applying necessary configurations.
+// It should be called after format decrypt and before the data is sent to
+// the main sync goroutines by channels.
 // Currently, it only applies romanization to the lyrics data.
 // May be extended in the future.
 //
