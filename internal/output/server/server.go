@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"io/fs"
 	"lrcsnc/internal/output/pkg/event"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
@@ -62,8 +63,10 @@ func InitServer() {
 	// and if there is a file already there,
 	// give fatal error.
 	if protocol == "unix" {
-		if _, err := os.Lstat(listenPath); err != nil && !errors.Is(err, os.ErrNotExist) {
+		if d, err := os.Lstat(listenPath); err != nil && !errors.Is(err, os.ErrNotExist) {
 			log.Fatal("output/server", "Listen path is invalid: file exists or there is an issue with permissions. You may want to check it out and remove file/change perms manually. More: "+err.Error())
+		} else if err == nil && d.Mode()&fs.ModeSocket == fs.ModeSocket {
+			log.Fatal("output/server", "The specified listen path is busy: a socket is already open there. Specify another listen path or, if nothing is actually using this socket, you could try removing it.")
 		}
 	}
 
