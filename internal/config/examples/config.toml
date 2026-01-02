@@ -21,7 +21,7 @@ chinese = false
 [cache]
 enabled = true
 dir = "$HOME/.cache/lrcsnc"
-life-span = 168
+life-span = 720
 
 [cache.store-condition]
 if-synced = true
