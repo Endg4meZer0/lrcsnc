@@ -17,7 +17,7 @@ var httpClient = http.Client{
 }
 
 func requestLyrics(title string, artist string) ([]byte, error) {
-	urlReqPath := "http://lrclib.net/api/search?" + url.PathEscape(fmt.Sprintf("track_name=%v&artist_name=%v", title, artist))
+	urlReqPath := "https://lrclib.net/api/search?" + url.PathEscape(fmt.Sprintf("track_name=%v&artist_name=%v", title, artist))
 	_, err := url.Parse(urlReqPath)
 	if err != nil {
 		log.Fatal("lyrics/providers/lrclib/client", fmt.Sprintf("Failed to parse string (%v) to URL; please, report this issue to GitHub. More:\n%v", urlReqPath, err))
