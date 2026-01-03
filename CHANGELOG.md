@@ -4,7 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [[0.1.1](https://github.com/Endg4meZer0/lrcsnc/releases/tag/v0.2.0)] - 2025-10-##
+## [[0.1.2](https://github.com/Endg4meZer0/lrcsnc/releases/tag/v0.1.2)] - 2026-01-03
+### Added
+- Ability to remove cached data for currently playing song by signaling USR2 at the lrcsnc process.
+### Changed
+- LrcLib provider now only sends one `search` request instead of multiple tries of `get` and `search` with different queries. Now, to get the best pick out of received data, there is an scoring algorithm inside lrcsnc itself that gives points for specific advantages (e.g. matching all artists or having exact duration match). Of course, that's not perfect, but it's actually better than LrcLib's `get` results sometimes, and on par otherwise.
+- A fatal log should now allow a graceful shutdown to proceed (e.g. deleting the UNIX socket during shutdown if launched as server with UNIX specified as protocol).
+- The default value for `cache.life-span` was changed from 168 (hours, so 1 week) to 720 (hours, so 1 month).
+### Fixed
+- The connection to LrcLib was insecure (using http) all this time (and I didn't notice T_T). That was changed (now it uses https properly).
+- Fatal log was always duplicated due to a duplicated print inside the method.
+- A proper error message for UNIX socket being busy during server's start-up that was introduced in v0.1.1 now works as intended.
+### Removed
+- Japanese romanization was removed due to being inconsistent and difficult to implement properly. Until I find a way to do so (preferrably not depending on outside binaries like `kakasi`), I will not try again. As such, the mention of `kakasi` required as optional dependency was removed as well.
+
+## [[0.1.1](https://github.com/Endg4meZer0/lrcsnc/releases/tag/v0.1.1)] - 2025-11-02
 ### Added
 - Client-server communication is realized: now lrcsnc can be launched in server-only, client-only, or standalone mode. Connections are made using UNIX sockets or TCP protocol. Standalone mode remains a default option and doesn't require any connection.
 
