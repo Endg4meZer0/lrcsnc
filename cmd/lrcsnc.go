@@ -5,6 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"lrcsnc/internal/cache"
 	"lrcsnc/internal/config"
 	"lrcsnc/internal/mpris"
 	"lrcsnc/internal/output/client"
@@ -56,6 +57,18 @@ func Start() {
 		}
 		defer mpris.Disconnect()
 	}
+
+	// Start the USR2 signal listener for cache removal
+	usr2Sig := make(chan os.Signal, 1)
+	signal.Notify(usr2Sig, syscall.SIGUSR2)
+
+	go func() {
+		for {
+			<-usr2Sig
+			song := global.Player.P.Song
+			cache.Remove(&song)
+		}
+	}()
 
 	exitSigs := make(chan os.Signal, 1)
 	signal.Notify(exitSigs, syscall.SIGINT, syscall.SIGTERM)
