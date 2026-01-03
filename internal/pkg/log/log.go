@@ -98,7 +98,6 @@ func Error(modulePath string, message string) {
 // thus it doesn't require for logger to be initialized.
 func Fatal(modulePath string, message string) {
 	fmt.Fprintln(os.Stdout, "["+modulePath+"] "+strings.ToUpper(string(types.LogLevelFatal))+": "+message)
-	fmt.Fprintln(os.Stderr, "["+modulePath+"] "+strings.ToUpper(string(types.LogLevelFatal))+": "+message)
 	// An attempt at graceful shutdown
 	//   (I still did not learn contexts...)
 	syscall.Kill(syscall.Getpid(), syscall.SIGINT)
