@@ -37,7 +37,6 @@ cd lrcsnc
 make # or `sudo make all` for automatic install
 ```
 Make sure to have go v1.23 or above.
-Japanese romanization also requires `kakasi` installed as a separate dependency (specifically the one made using C, e.g. `extra/kakasi` package on Arch). If you do not plan on using it, feel free to ignore.
 
 ## Usage
 ```
