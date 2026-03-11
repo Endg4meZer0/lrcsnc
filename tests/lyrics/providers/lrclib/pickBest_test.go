@@ -5,8 +5,9 @@ import (
 	"testing"
 
 	lrclib "lrcsnc/internal/lyrics/providers/lrclib"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/types"
+	playerStruct "lrcsnc/internal/player/struct"
 )
 
 // TestPickBestLyrics tests the LrcLib's module to pick best lyrics data
@@ -14,9 +15,17 @@ import (
 // This is a very primitive test because it tests only one variation.
 // Maybe later will be more and this will turn into a proper test.
 func TestPickBestLyrics(t *testing.T) {
-	song := playerStructs.Song{Title: "Armageddon Eyes", Artists: []string{"Invent Animate", "Silent Planet"}, Album: "Bloom In Heaven", AlbumArtists: []string{"Invent Animate"}, Duration: 243}
-	ldata := playerStructs.LyricsData{
-		Lyrics: playerStructs.Lyrics{
+	song := playerStruct.Song{
+		Metadata: playerStruct.SongMetadata{
+			Title:        "Armageddon Eyes",
+			Artists:      []string{"Invent Animate", "Silent Planet"},
+			Album:        "Bloom In Heaven",
+			AlbumArtists: []string{"Invent Animate"},
+			Duration:     243,
+		},
+	}
+	ldata := lyricStruct.LyricsData{
+		Lyrics: lyricStruct.Lyrics{
 			{Timing: 35.43, Text: "Stargazing, cosmic signs"},
 			{Timing: 41.53, Text: "Born under moonlight"},
 			{Timing: 44.35, Text: "Armageddon eyes"},
@@ -61,7 +70,7 @@ func TestPickBestLyrics(t *testing.T) {
 	}
 
 	g, err := lrclib.Provider{}.Get(song)
-	if err != nil || ldata.LyricsState != g.LyricsState || slices.CompareFunc(g.Lyrics, ldata.Lyrics, func(l1 playerStructs.Lyric, l2 playerStructs.Lyric) int {
+	if err != nil || ldata.LyricsState != g.LyricsState || slices.CompareFunc(g.Lyrics, ldata.Lyrics, func(l1 lyricStruct.Lyric, l2 lyricStruct.Lyric) int {
 		if l1.Timing == l2.Timing && l1.Text == l2.Text {
 			return 0
 		} else if l1.Timing < l2.Timing {

@@ -3,13 +3,14 @@ package providers
 import (
 	lrclib "lrcsnc/internal/lyrics/providers/lrclib"
 
-	playerStructs "lrcsnc/internal/pkg/structs/player"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/types"
+	playerStruct "lrcsnc/internal/player/struct"
 )
 
 type Provider interface {
 	// Get returns the lyrics of a song in form of LyricsData
-	Get(playerStructs.Song) (playerStructs.LyricsData, error)
+	Get(playerStruct.Song) (lyricStruct.LyricsData, error)
 }
 
 var Providers = map[types.LyricsProviderType]Provider{

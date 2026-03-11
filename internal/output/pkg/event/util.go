@@ -1,10 +1,8 @@
 package event
 
 import (
-	playerStructs "lrcsnc/internal/pkg/structs/player"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/types"
-
-	"github.com/Endg4meZer0/go-mpris"
 )
 
 func MakeDefaultEvent(et EventType) (e Event) {
@@ -28,7 +26,7 @@ func MakeDefaultEvent(et EventType) (e Event) {
 		}
 	case EventTypePlaybackStatusChanged:
 		e.Data = EventTypePlaybackStatusChangedData{
-			PlaybackStatus: mpris.PlaybackStopped,
+			PlaybackStatus: types.PlaybackStatusStopped,
 		}
 	case EventTypeLyricsStateChanged:
 		e.Data = EventTypeLyricsStateChangedData{
@@ -37,7 +35,7 @@ func MakeDefaultEvent(et EventType) (e Event) {
 	case EventTypeActiveLyricChanged:
 		e.Data = EventTypeActiveLyricChangedData{
 			Index:        -1,
-			Lyric:        playerStructs.Lyric{Timing: 0, Text: ""},
+			Lyric:        lyricStruct.Lyric{Timing: 0, Text: ""},
 			Multiplier:   0,
 			TimeUntilEnd: 0,
 			Resync:       false,

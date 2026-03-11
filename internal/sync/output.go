@@ -4,13 +4,11 @@ import (
 	"math"
 	"time"
 
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/output/pkg/event"
 	"lrcsnc/internal/output/server"
 	"lrcsnc/internal/pkg/global"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
-
-	"github.com/Endg4meZer0/go-mpris"
 )
 
 var lyricsTimer = time.NewTimer(5 * time.Minute)
@@ -34,7 +32,7 @@ func lyricsSynchronizer() {
 				Type: event.EventTypeActiveLyricChanged,
 				Data: event.EventTypeActiveLyricChangedData{
 					Index:        -1,
-					Lyric:        playerStructs.Lyric{Timing: 0, Text: ""},
+					Lyric:        lyricStruct.Lyric{Timing: 0, Text: ""},
 					Multiplier:   0,
 					TimeUntilEnd: 0,
 					Resync:       resyncFlag,
@@ -47,7 +45,7 @@ func lyricsSynchronizer() {
 			newLyricIndex := -1
 
 			for i, lyric := range global.Player.P.Song.LyricsData.Lyrics {
-				if lyric.Timing+global.Config.C.Lyrics.TimingOffset <= global.Player.P.Position && currentLyricTiming <= lyric.Timing+global.Config.C.Lyrics.TimingOffset {
+				if lyric.Timing+global.Config.C.Lyrics.TimingOffset <= global.Player.P.LastDetectedPosition && currentLyricTiming <= lyric.Timing+global.Config.C.Lyrics.TimingOffset {
 					currentLyricTiming = lyric.Timing + global.Config.C.Lyrics.TimingOffset
 					newLyricIndex = i
 				}
@@ -57,10 +55,10 @@ func lyricsSynchronizer() {
 				nextLyricTiming = global.Player.P.Song.LyricsData.Lyrics[newLyricIndex+1].Timing + global.Config.C.Lyrics.TimingOffset
 			}
 
-			lyricsTimerDuration := time.Duration(int64(math.Abs(nextLyricTiming-global.Player.P.Position)*1000)) * time.Millisecond
+			lyricsTimerDuration := time.Duration(int64(math.Abs(nextLyricTiming-global.Player.P.LastDetectedPosition)*1000)) * time.Millisecond
 
-			if currentLyricTiming == -1 || (global.Player.P.PlaybackStatus == mpris.PlaybackPlaying && writtenTiming != currentLyricTiming) {
-				lyric := playerStructs.Lyric{Timing: 0, Text: ""}
+			if currentLyricTiming == -1 || (global.Player.P.PlaybackStatus == types.PlaybackStatusPlaying && writtenTiming != currentLyricTiming) {
+				lyric := lyricStruct.Lyric{Timing: 0, Text: ""}
 				if newLyricIndex >= 0 && newLyricIndex < len(global.Player.P.Song.LyricsData.Lyrics) {
 					lyric = global.Player.P.Song.LyricsData.Lyrics[newLyricIndex]
 				}
@@ -70,14 +68,14 @@ func lyricsSynchronizer() {
 						Index:        newLyricIndex,
 						Lyric:        lyric,
 						Multiplier:   global.Player.P.Song.LyricsData.Lyrics.CalculateMultiplierFor(newLyricIndex),
-						TimeUntilEnd: nextLyricTiming - global.Player.P.Position,
+						TimeUntilEnd: nextLyricTiming - global.Player.P.LastDetectedPosition,
 						Resync:       resyncFlag,
 					},
 				})
 			}
 
 			writtenTiming = currentLyricTiming
-			global.Player.P.Position = nextLyricTiming
+			global.Player.P.LastDetectedPosition = nextLyricTiming
 			lyricsTimer.Reset(lyricsTimerDuration)
 		}
 		resyncFlag = false

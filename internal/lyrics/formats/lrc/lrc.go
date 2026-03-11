@@ -2,7 +2,7 @@ package lrc
 
 import (
 	"cmp"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"regexp"
 	"slices"
 	"strconv"
@@ -15,11 +15,11 @@ var timingRegexp = regexp.MustCompile(`(\[[0-9]{2}:[0-9]{2}.[0-9]{1,3}])+`)
 //
 // It just splits the provided data string by the new line symbol,
 // then constructs a Lyrics object out of that.
-func ConvertPlain(data string) playerStructs.Lyrics {
+func ConvertPlain(data string) lyricStruct.Lyrics {
 	lines := strings.Split(data, "\n")
-	out := make(playerStructs.Lyrics, 0, len(lines))
+	out := make(lyricStruct.Lyrics, 0, len(lines))
 	for _, lyric := range lines {
-		out = append(out, playerStructs.Lyric{
+		out = append(out, lyricStruct.Lyric{
 			Timing: 0,
 			Text:   strings.TrimSpace(lyric),
 		})
@@ -32,7 +32,7 @@ func ConvertPlain(data string) playerStructs.Lyrics {
 // It splits the provided data string by the new line symbol,
 // then tries to use known LRC practices for synced lyrics
 // to construct the Lyrics object out of that.
-func ConvertSynced(data string) playerStructs.Lyrics {
+func ConvertSynced(data string) lyricStruct.Lyrics {
 	hasRepetitiveLyrics := false
 	lines := strings.Split(data, "\n")
 	startIndex := 0
@@ -44,7 +44,7 @@ func ConvertSynced(data string) playerStructs.Lyrics {
 		}
 	}
 
-	out := make(playerStructs.Lyrics, 0, len(lines[startIndex:]))
+	out := make(lyricStruct.Lyrics, 0, len(lines[startIndex:]))
 
 	for _, lyric := range lines[startIndex:] {
 		timings := timingRegexp.FindAllString(lyric, -1)
@@ -61,7 +61,7 @@ func ConvertSynced(data string) playerStructs.Lyrics {
 			if timing == -1 {
 				continue
 			}
-			out = append(out, playerStructs.Lyric{
+			out = append(out, lyricStruct.Lyric{
 				Timing: timing,
 				Text:   lyric,
 			})
@@ -69,7 +69,7 @@ func ConvertSynced(data string) playerStructs.Lyrics {
 	}
 
 	if hasRepetitiveLyrics {
-		slices.SortFunc(out, func(i, j playerStructs.Lyric) int {
+		slices.SortFunc(out, func(i, j lyricStruct.Lyric) int {
 			return cmp.Compare(i.Timing, j.Timing)
 		})
 	}

@@ -1,4 +1,4 @@
-package mpris
+package signals
 
 type SignalType uint8
 
@@ -16,4 +16,4 @@ type Message struct {
 	Data any
 }
 
-var MPRISMessageChannel = make(chan Message)
+var MessageChannel = make(chan Message)

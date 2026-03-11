@@ -49,26 +49,26 @@ func (c *client) setTemplateReplacer() {
 		map[string]func() string{
 			"text": func() string { return c.activeText },
 			"artist": func() string {
-				if len(global.Player.P.Song.Artists) > 0 {
-					return global.Player.P.Song.Artists[0]
+				if len(global.Player.P.Song.Metadata.Artists) > 0 {
+					return global.Player.P.Song.Metadata.Artists[0]
 				} else {
 					return ""
 				}
 			},
 			"artists": func() string {
-				return strings.Join(global.Player.P.Song.Artists, ", ")
+				return strings.Join(global.Player.P.Song.Metadata.Artists, ", ")
 			},
 			"title": func() string {
-				return global.Player.P.Song.Title
+				return global.Player.P.Song.Metadata.Title
 			},
 			"album": func() string {
-				return global.Player.P.Song.Album
+				return global.Player.P.Song.Metadata.Album
 			},
 			"position": func() string {
-				return fmt.Sprintf("%02d:%02d", int(global.Player.P.Position)/60, int(global.Player.P.Position)%60)
+				return fmt.Sprintf("%02d:%02d", int(global.Player.P.LastDetectedPosition)/60, int(global.Player.P.LastDetectedPosition)%60)
 			},
 			"duration": func() string {
-				return fmt.Sprintf("%02d:%02d", int(global.Player.P.Song.Duration)/60, int(global.Player.P.Song.Duration)%60)
+				return fmt.Sprintf("%02d:%02d", int(global.Player.P.Song.Metadata.Duration)/60, int(global.Player.P.Song.Metadata.Duration)%60)
 			},
 			"rate": func() string {
 				return fmt.Sprintf("%1.2fx", global.Player.P.Rate)

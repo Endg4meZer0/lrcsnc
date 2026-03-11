@@ -1,8 +1,8 @@
 package lyrics
 
 import (
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/log"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/romanization"
 )
 
@@ -15,7 +15,7 @@ import (
 // Every function/method/module/whatever needs to lock the mutex
 // by themselves and only themselves.
 // No locking a mutex in THIS function.
-func Configure(lyricsData *playerStructs.LyricsData) {
+func Configure(lyricsData *lyricStruct.LyricsData) {
 	log.Debug("lyrics/configure", "Starting configuring the received lyrics")
 
 	// Romanization

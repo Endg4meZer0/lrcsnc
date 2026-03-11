@@ -21,10 +21,10 @@ func lyricFetcher() {
 		go server.ReceiveEvent(event.Event{
 			Type: event.EventTypeSongChanged,
 			Data: event.EventTypeSongChangedData{
-				Title:    global.Player.P.Song.Title,
-				Artists:  global.Player.P.Song.Artists,
-				Album:    global.Player.P.Song.Album,
-				Duration: global.Player.P.Song.Duration,
+				Title:    global.Player.P.Song.Metadata.Title,
+				Artists:  global.Player.P.Song.Metadata.Artists,
+				Album:    global.Player.P.Song.Metadata.Album,
+				Duration: global.Player.P.Song.Metadata.Duration,
 			},
 		})
 

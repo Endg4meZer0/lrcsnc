@@ -1,4 +1,4 @@
-package player
+package lyricStruct
 
 import "lrcsnc/internal/pkg/types"
 

@@ -8,11 +8,11 @@ import (
 	"lrcsnc/internal/cache"
 	errs "lrcsnc/internal/lyrics/errors"
 	"lrcsnc/internal/lyrics/providers"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/output/pkg/event"
 	"lrcsnc/internal/output/server"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
 )
 
@@ -20,12 +20,12 @@ import (
 // It first checks if caching is enabled and attempts to retrieve the lyrics from the cache.
 // If the lyrics are not found in the cache, it fetches the lyrics from the configured lyrics provider.
 // If the lyrics are successfully retrieved and caching is enabled, it stores the lyrics in the cache.
-func Fetch() (playerStructs.LyricsData, error) {
+func Fetch() (lyricStruct.LyricsData, error) {
 	global.Player.M.Lock()
 	song := global.Player.P.Song
 	global.Player.M.Unlock()
 
-	log.Debug("lyrics/fetch", fmt.Sprintf("Fetching lyrics for song %v - %v", strings.Join(song.Artists, ", "), song.Title))
+	log.Debug("lyrics/fetch", fmt.Sprintf("Fetching lyrics for song %v - %v", strings.Join(song.Metadata.Artists, ", "), song.Metadata.Title))
 
 	// yea i'm not covering this with mutexes good luck timing this out future me
 	if global.Config.C.Cache.Enabled {

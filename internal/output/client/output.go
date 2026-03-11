@@ -8,8 +8,6 @@ import (
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
 	"lrcsnc/internal/pkg/types"
-
-	mprislib "github.com/Endg4meZer0/go-mpris"
 )
 
 // output sets the client's pendingText as activeText and
@@ -82,7 +80,7 @@ func (c *client) instrumentalLoop() {
 		j := int(global.Config.C.Client.Format.Instrumental.MaxSymbols + 1)
 
 		// Only update instrumental stuff if there is an active song
-		if global.Player.P.PlaybackStatus != mprislib.PlaybackStopped {
+		if global.Player.P.PlaybackStatus != types.PlaybackStatusStopped {
 			var stringToPrint string
 
 			switch global.Player.P.Song.LyricsData.LyricsState {
@@ -104,7 +102,7 @@ func (c *client) instrumentalLoop() {
 			stringToPrint += strings.Repeat(note, i%j)
 
 			out = stringToPrint
-			stopWritingAfter = global.Player.P.PlaybackStatus == mprislib.PlaybackPaused
+			stopWritingAfter = global.Player.P.PlaybackStatus == types.PlaybackStatusPaused
 
 			i++
 			if i >= j {

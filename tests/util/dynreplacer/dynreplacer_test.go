@@ -8,13 +8,13 @@ import (
 )
 
 func TestDynReplacer(t *testing.T) {
-	global.Player.P.Position = 123.11
+	global.Player.P.LastDetectedPosition = 123.11
 
 	dr := dynreplacer.NewDynamicReplacer(
 		map[string]func() string{
 			"test":     func() string { return "TEST?!?!?!" },
 			"what":     func() string { return fmt.Sprintf("huh %v", 1) },
-			"position": func() string { return fmt.Sprintf("%v", global.Player.P.Position) },
+			"position": func() string { return fmt.Sprintf("%v", global.Player.P.LastDetectedPosition) },
 		},
 	)
 
@@ -24,7 +24,7 @@ func TestDynReplacer(t *testing.T) {
 		t.Errorf("[util/TestDynReplacer] ERROR: Received " + repl1 + " instead of " + true1)
 	}
 
-	global.Player.P.Position = 514.12
+	global.Player.P.LastDetectedPosition = 514.12
 	repl2 := dr.Replace("%test%ing %what% inside %stuff% the box %position%")
 	true2 := `TEST?!?!?!ing huh 1 inside %stuff% the box 514.12`
 	if repl2 != true2 {

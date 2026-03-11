@@ -7,9 +7,10 @@ import (
 
 	errs "lrcsnc/internal/lyrics/errors"
 	"lrcsnc/internal/lyrics/formats/lrc"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/errors"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
+	playerStruct "lrcsnc/internal/player/struct"
 )
 
 type LrcLibResponse struct {
@@ -24,14 +25,14 @@ type LrcLibResponse struct {
 
 type LrcLibResponses []LrcLibResponse
 
-func responseListToLyricsData(song *playerStructs.Song, bytes []byte) (playerStructs.LyricsData, error) {
+func responseListToLyricsData(song *playerStruct.Song, bytes []byte) (lyricStruct.LyricsData, error) {
 	resps, err := parseResps(bytes)
 	if err != nil {
-		return playerStructs.LyricsData{LyricsState: types.LyricsStateUnknown}, err
+		return lyricStruct.LyricsData{LyricsState: types.LyricsStateUnknown}, err
 	}
 
 	if len(resps) == 0 {
-		return playerStructs.LyricsData{LyricsState: types.LyricsStateNotFound}, errs.NotFound
+		return lyricStruct.LyricsData{LyricsState: types.LyricsStateNotFound}, errs.NotFound
 	}
 
 	resp := resps.pickBest(song)
@@ -40,7 +41,7 @@ func responseListToLyricsData(song *playerStructs.Song, bytes []byte) (playerStr
 		return lyricsData, nil
 	}
 
-	return playerStructs.LyricsData{LyricsState: types.LyricsStateNotFound}, errs.NotFound
+	return lyricStruct.LyricsData{LyricsState: types.LyricsStateNotFound}, errs.NotFound
 }
 
 func parseResps(data []byte) (LrcLibResponses, error) {
@@ -58,7 +59,7 @@ func parseResps(data []byte) (LrcLibResponses, error) {
 	return LrcLibResponses{out}, nil
 }
 
-func (resp LrcLibResponse) toLyricsData() (out playerStructs.LyricsData) {
+func (resp LrcLibResponse) toLyricsData() (out lyricStruct.LyricsData) {
 	if !resp.Instrumental && resp.PlainLyrics == "" && resp.SyncedLyrics == "" {
 		out.LyricsState = types.LyricsStateUnknown
 	}
@@ -80,7 +81,7 @@ func (resp LrcLibResponse) toLyricsData() (out playerStructs.LyricsData) {
 	return
 }
 
-func (rs LrcLibResponses) pickBest(song *playerStructs.Song) LrcLibResponse {
+func (rs LrcLibResponses) pickBest(song *playerStruct.Song) LrcLibResponse {
 	if len(rs) == 0 {
 		return LrcLibResponse{}
 	}
@@ -117,17 +118,17 @@ func (rs LrcLibResponses) pickBest(song *playerStructs.Song) LrcLibResponse {
 		}
 
 		// -----
-		if r.Album == song.Album {
+		if r.Album == song.Metadata.Album {
 			score += 2
-		} else if strings.Contains(song.Album, r.Album) || strings.Contains(r.Album, song.Album) {
+		} else if strings.Contains(song.Metadata.Album, r.Album) || strings.Contains(r.Album, song.Metadata.Album) {
 			score += 1
 		}
 
 		// -----
 		artistNameCleaner := strings.NewReplacer(" & ", " ", ", ", " ")
 		rartist := artistNameCleaner.Replace(r.Artist)
-		sartist := artistNameCleaner.Replace(strings.Join(song.Artists, ", "))
-		salbartist := artistNameCleaner.Replace(strings.Join(song.AlbumArtists, ", "))
+		sartist := artistNameCleaner.Replace(strings.Join(song.Metadata.Artists, ", "))
+		salbartist := artistNameCleaner.Replace(strings.Join(song.Metadata.AlbumArtists, ", "))
 
 		switch rartist {
 		case sartist:
@@ -137,11 +138,11 @@ func (rs LrcLibResponses) pickBest(song *playerStructs.Song) LrcLibResponse {
 		}
 
 		// -----
-		if math.Floor(r.Duration) == math.Floor(song.Duration) {
+		if math.Floor(r.Duration) == math.Floor(song.Metadata.Duration) {
 			score += 5
-		} else if math.Abs(r.Duration-song.Duration) <= 2 {
+		} else if math.Abs(r.Duration-song.Metadata.Duration) <= 2 {
 			score += 3
-		} else if math.Abs(r.Duration-song.Duration) <= 5 {
+		} else if math.Abs(r.Duration-song.Metadata.Duration) <= 5 {
 			score += 1
 		}
 

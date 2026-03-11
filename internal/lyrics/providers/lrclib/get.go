@@ -2,19 +2,20 @@ package lrclib
 
 import (
 	errs "lrcsnc/internal/lyrics/errors"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/log"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
+	playerStruct "lrcsnc/internal/player/struct"
 	"strings"
 )
 
-func (l Provider) Get(song playerStructs.Song) (playerStructs.LyricsData, error) {
+func (l Provider) Get(song playerStruct.Song) (lyricStruct.LyricsData, error) {
 	var body []byte
 	var err error
-	var res playerStructs.LyricsData = playerStructs.LyricsData{LyricsState: types.LyricsStateNotFound}
+	var res lyricStruct.LyricsData = lyricStruct.LyricsData{LyricsState: types.LyricsStateNotFound}
 
 	log.Debug("lyrics/providers/lrclib/get", "Trying to get lyrics directly...")
-	body, err = getLyrics(song.Title, strings.Join(song.Artists, ", "), song.Album, song.Duration)
+	body, err = getLyrics(song.Metadata.Title, strings.Join(song.Metadata.Artists, ", "), song.Metadata.Album, song.Metadata.Duration)
 	if err == nil {
 		outs, err := parseResps(body)
 		if err == nil && outs[0].toLyricsData().LyricsState != types.LyricsStatePlain {
@@ -22,7 +23,7 @@ func (l Provider) Get(song playerStructs.Song) (playerStructs.LyricsData, error)
 		}
 	}
 	log.Debug("lyrics/providers/lrclib/get", "Trying to search around for lyrics more...")
-	body, err = searchLyrics(song.Title, strings.Join(song.AlbumArtists, ", "))
+	body, err = searchLyrics(song.Metadata.Title, strings.Join(song.Metadata.AlbumArtists, ", "))
 	if err == nil {
 		res, err = responseListToLyricsData(&song, body)
 	}

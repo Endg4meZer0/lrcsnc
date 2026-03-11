@@ -1,12 +1,12 @@
 package player
 
 import (
-	playerStructs "lrcsnc/internal/pkg/structs/player"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"testing"
 )
 
 func TestCalcMultiplier(t *testing.T) {
-	test1 := playerStructs.Lyrics{
+	test1 := lyricStruct.Lyrics{
 		{
 			Timing: 0.11,
 			Text:   "BUGAGA",

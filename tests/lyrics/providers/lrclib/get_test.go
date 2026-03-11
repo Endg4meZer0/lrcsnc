@@ -6,8 +6,9 @@ import (
 
 	errs "lrcsnc/internal/lyrics/errors"
 	lrclib "lrcsnc/internal/lyrics/providers/lrclib"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/types"
+	playerStruct "lrcsnc/internal/player/struct"
 )
 
 // TestGetLyrics tests the ability to get different kinds of
@@ -15,14 +16,21 @@ import (
 func TestGetLyrics(t *testing.T) {
 	tests := []struct {
 		name  string
-		song  playerStructs.Song
-		ldata playerStructs.LyricsData
+		song  playerStruct.Song
+		ldata lyricStruct.LyricsData
 	}{
 		{
 			name: "existing",
-			song: playerStructs.Song{Title: "Earthless", Artists: []string{"Night Verses"}, Album: "From the Gallery of Sleep", Duration: 383},
-			ldata: playerStructs.LyricsData{
-				Lyrics: []playerStructs.Lyric{
+			song: playerStruct.Song{
+				Metadata: playerStruct.SongMetadata{
+					Title:    "Earthless",
+					Artists:  []string{"Night Verses"},
+					Album:    "From the Gallery of Sleep",
+					Duration: 383,
+				},
+			},
+			ldata: lyricStruct.LyricsData{
+				Lyrics: []lyricStruct.Lyric{
 					{Timing: 344.18, Text: "\"He is the one who gave me the horse"},
 					{Timing: 346.74, Text: "So I could ride into the desert and see"},
 					{Timing: 350.77, Text: "The future.\""},
@@ -37,9 +45,16 @@ func TestGetLyrics(t *testing.T) {
 		},
 		{
 			name: "existing-unicode",
-			song: playerStructs.Song{Title: "狼之主", Artists: []string{"塞壬唱片-MSR"}, Album: "敘拉古人OST", Duration: 215},
-			ldata: playerStructs.LyricsData{
-				Lyrics: []playerStructs.Lyric{
+			song: playerStruct.Song{
+				Metadata: playerStruct.SongMetadata{
+					Title:    "狼之主",
+					Artists:  []string{"塞壬唱片-MSR"},
+					Album:    "敘拉古人OST",
+					Duration: 215,
+				},
+			},
+			ldata: lyricStruct.LyricsData{
+				Lyrics: []lyricStruct.Lyric{
 					{Timing: 20.48, Text: "You're tough, but it's never been about you"},
 					{Timing: 23.86, Text: "You're free, but cement your feet, a statue"},
 					{Timing: 27.02, Text: "Your rules, but you'd rather make up something"},
@@ -80,9 +95,16 @@ func TestGetLyrics(t *testing.T) {
 		},
 		{
 			name: "existing-plain",
-			song: playerStructs.Song{Title: "All My Life, My Heart Has Yearned for a Thing I Cannot Name", Artists: []string{"Harm"}, Album: "a song you can't feel anymore.", Duration: 170},
-			ldata: playerStructs.LyricsData{
-				Lyrics: []playerStructs.Lyric{
+			song: playerStruct.Song{
+				Metadata: playerStruct.SongMetadata{
+					Title:    "All My Life, My Heart Has Yearned for a Thing I Cannot Name",
+					Artists:  []string{"Harm"},
+					Album:    "a song you can't feel anymore.",
+					Duration: 170,
+				},
+			},
+			ldata: lyricStruct.LyricsData{
+				Lyrics: []lyricStruct.Lyric{
 					{Timing: 0, Text: "And here we stand now, intimate strangers in the end"},
 					{Timing: 0, Text: "With these cold sheets we lay between"},
 					{Timing: 0, Text: "We're holding onto what, makes us emptier again"},
@@ -116,17 +138,31 @@ func TestGetLyrics(t *testing.T) {
 		},
 		{
 			name: "existing-instrumental",
-			song: playerStructs.Song{Title: "Vice Wave", Artists: []string{"Night Verses"}, Album: "From the Gallery of Sleep", Duration: 300},
-			ldata: playerStructs.LyricsData{
-				Lyrics:      []playerStructs.Lyric{},
+			song: playerStruct.Song{
+				Metadata: playerStruct.SongMetadata{
+					Title:    "Vice Wave",
+					Artists:  []string{"Night Verses"},
+					Album:    "From the Gallery of Sleep",
+					Duration: 300,
+				},
+			},
+			ldata: lyricStruct.LyricsData{
+				Lyrics:      []lyricStruct.Lyric{},
 				LyricsState: types.LyricsStateInstrumental,
 			},
 		},
 		{
 			name: "non-existing",
-			song: playerStructs.Song{Title: "Moonmore", Artists: []string{"Day Choruses"}, Album: "From the Gallery of Minecraft Pictures idk", Duration: 283},
-			ldata: playerStructs.LyricsData{
-				Lyrics:      []playerStructs.Lyric{},
+			song: playerStruct.Song{
+				Metadata: playerStruct.SongMetadata{
+					Title:    "Moonmore",
+					Artists:  []string{"Day Choruses"},
+					Album:    "From the Gallery of Minecraft Pictures idk",
+					Duration: 283,
+				},
+			},
+			ldata: lyricStruct.LyricsData{
+				Lyrics:      []lyricStruct.Lyric{},
 				LyricsState: types.LyricsStateNotFound,
 			},
 		},

@@ -1,11 +1,11 @@
-package config
+package configStruct
 
 import (
-	"lrcsnc/internal/pkg/structs/config/cache"
-	"lrcsnc/internal/pkg/structs/config/client"
-	"lrcsnc/internal/pkg/structs/config/lyrics"
-	"lrcsnc/internal/pkg/structs/config/net"
-	"lrcsnc/internal/pkg/structs/config/player"
+	"lrcsnc/internal/config/struct/cache"
+	"lrcsnc/internal/config/struct/client"
+	"lrcsnc/internal/config/struct/lyrics"
+	"lrcsnc/internal/config/struct/net"
+	"lrcsnc/internal/config/struct/player"
 )
 
 type Config struct {

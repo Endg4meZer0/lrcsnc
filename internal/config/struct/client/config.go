@@ -1,6 +1,6 @@
 package client
 
-import "lrcsnc/internal/pkg/structs/config/client/format"
+import "lrcsnc/internal/config/struct/client/format"
 
 type Config struct {
 	Destination   string        `toml:"destination"`

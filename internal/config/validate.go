@@ -6,7 +6,7 @@ import (
 	"path"
 	"strings"
 
-	configStruct "lrcsnc/internal/pkg/structs/config"
+	configStruct "lrcsnc/internal/config/struct"
 )
 
 type ValidationError struct {

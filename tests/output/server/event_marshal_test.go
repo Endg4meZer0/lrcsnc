@@ -2,15 +2,15 @@ package server
 
 import (
 	"encoding/json"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/output/pkg/event"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"testing"
 )
 
 func TestEventMarshal(t *testing.T) {
 
 	lyrCngEvent := event.Event{Type: event.EventTypeActiveLyricChanged, Data: event.EventTypeActiveLyricChangedData{
-		Lyric: playerStructs.Lyric{
+		Lyric: lyricStruct.Lyric{
 			Timing: 123.11,
 			Text:   "yo~!",
 		},

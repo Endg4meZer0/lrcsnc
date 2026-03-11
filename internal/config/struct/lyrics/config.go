@@ -1,7 +1,7 @@
 package lyrics
 
 import (
-	"lrcsnc/internal/pkg/structs/config/lyrics/romanization"
+	"lrcsnc/internal/config/struct/lyrics/romanization"
 	"lrcsnc/internal/pkg/types"
 )
 

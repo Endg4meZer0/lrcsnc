@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	errs "lrcsnc/internal/config/errors"
+	configStruct "lrcsnc/internal/config/struct"
 	"lrcsnc/internal/output/client"
 	"lrcsnc/internal/output/pkg/event"
 	genericErrs "lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
-	configStruct "lrcsnc/internal/pkg/structs/config"
 
 	"github.com/pelletier/go-toml/v2"
 )

@@ -2,21 +2,20 @@ package sync
 
 import (
 	"lrcsnc/internal/pkg/log"
+	"lrcsnc/internal/pkg/types"
+	"lrcsnc/internal/player"
 	"time"
 
-	"lrcsnc/internal/mpris"
 	"lrcsnc/internal/pkg/global"
-
-	mprislib "github.com/Endg4meZer0/go-mpris"
 )
 
 var needsSynchronization chan bool = make(chan bool, 1)
 var isSynchronizing bool = false
 
 // This is a position synchronizer.
-// It is triggered by AskForPositionSync function 
+// It is triggered by AskForPositionSync function
 // on any Seeked signals, PlaybackStatus changes and the lyrics fetching.
-// 
+//
 // It is needed for more precise syncing of the lyrics
 // (to prevent a possible mismatch of the position from our data
 // and the actual player's position).
@@ -29,28 +28,28 @@ func positionSynchronizer() {
 	for {
 		<-needsSynchronization
 
-		if global.Player.P.PlaybackStatus != mprislib.PlaybackPlaying {
+		if global.Player.P.PlaybackStatus != types.PlaybackStatusPlaying {
 			stopLyricsSync()
 			continue
 		}
 
 		isSynchronizing = true
-		oldPos, err := mpris.GetPosition()
+		oldPos, err := player.Controller.GetPosition()
 		if err != nil {
-			log.Error("sync", "positionSynchronizer failed to get position: " + err.Error())
+			log.Error("sync", "positionSynchronizer failed to get position: "+err.Error())
 			continue
 		}
 		ticker.Reset(50 * time.Millisecond)
 		for {
 			<-ticker.C
-			newPos, err := mpris.GetPosition()
+			newPos, err := player.Controller.GetPosition()
 			if err != nil {
-			log.Error("sync", "positionSynchronizer failed to get position: " + err.Error())
+				log.Error("sync", "positionSynchronizer failed to get position: "+err.Error())
 				break
 			}
 			if newPos != oldPos {
 				global.Player.M.Lock()
-				global.Player.P.Position = newPos
+				global.Player.P.LastDetectedPosition = newPos
 				global.Player.M.Unlock()
 
 				break

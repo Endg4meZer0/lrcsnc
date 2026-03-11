@@ -3,8 +3,8 @@ package romanization
 import (
 	"unicode"
 
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/global"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
 )
 
 // TODO: PROBABLY DONE BUT CHECK! there may be songs with mixed languages, so we may need to romanize each symbol separately
@@ -34,7 +34,7 @@ var zhUnicodeRangeTable = []*unicode.RangeTable{
 }
 
 // Returns romanized lyrics (or the same lyrics if the language is not supported)
-func Romanize(lyrics []playerStructs.Lyric) {
+func Romanize(lyrics []lyricStruct.Lyric) {
 	global.Config.M.Lock()
 
 	if !global.Config.C.Lyrics.Romanization.IsEnabled() {
@@ -59,7 +59,7 @@ func Romanize(lyrics []playerStructs.Lyric) {
 
 // getLang returns the detected languages that are supported by romanization module
 // in form of the Language bit set.
-func getLang(lyric playerStructs.Lyric) (lang Language) {
+func getLang(lyric lyricStruct.Lyric) (lang Language) {
 	global.Config.M.Lock()
 	defer global.Config.M.Unlock()
 

@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
+	playerStruct "lrcsnc/internal/player/struct"
 	"os"
 	"time"
 
@@ -58,7 +59,7 @@ func Close() {
 	_ = StorageInstance.db.Close()
 }
 
-func (s *Storage) Fetch(song *playerStructs.Song) (playerStructs.LyricsData, CacheState) {
+func (s *Storage) Fetch(song *playerStruct.Song) (lyricStruct.LyricsData, CacheState) {
 	global.Config.M.Lock()
 	defer global.Config.M.Unlock()
 
@@ -70,17 +71,17 @@ func (s *Storage) Fetch(song *playerStructs.Song) (playerStructs.LyricsData, Cac
 	err := s.db.QueryRow(q, args...).Scan(&lyrData, &lyrState, &updatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		log.Debug("cache", "Failed to fetch cached lyrics; no such entry is present (cache miss).")
-		return playerStructs.LyricsData{LyricsState: types.LyricsStateNotFound}, CacheStateNonExistant
+		return lyricStruct.LyricsData{LyricsState: types.LyricsStateNotFound}, CacheStateNonExistant
 	} else if err != nil {
 		log.Error("cache", fmt.Sprintf("Failed to fetch cached lyrics; error: %v", err))
-		return playerStructs.LyricsData{LyricsState: types.LyricsStateNotFound}, CacheStateNonExistant
+		return lyricStruct.LyricsData{LyricsState: types.LyricsStateNotFound}, CacheStateNonExistant
 	}
 
-	var lyrics playerStructs.Lyrics
+	var lyrics lyricStruct.Lyrics
 	err = json.Unmarshal([]byte(lyrData), &lyrics)
 	if err != nil {
 		log.Error("cache", fmt.Sprintf("Failed to unmarshal lyrics data from cache; error: %v", err))
-		return playerStructs.LyricsData{LyricsState: types.LyricsStateNotFound}, CacheStateNonExistant
+		return lyricStruct.LyricsData{LyricsState: types.LyricsStateNotFound}, CacheStateNonExistant
 	}
 
 	var cacheState CacheState = CacheStateExpired
@@ -88,10 +89,10 @@ func (s *Storage) Fetch(song *playerStructs.Song) (playerStructs.LyricsData, Cac
 		cacheState = CacheStateActive
 	}
 
-	return playerStructs.LyricsData{Lyrics: lyrics, LyricsState: types.LyricsState(lyrState)}, cacheState
+	return lyricStruct.LyricsData{Lyrics: lyrics, LyricsState: types.LyricsState(lyrState)}, cacheState
 }
 
-func (s *Storage) Store(song *playerStructs.Song) error {
+func (s *Storage) Store(song *playerStruct.Song) error {
 	q, args := insertQuery(song)
 	_, err := s.db.Exec(q, args...)
 	if err != nil {
@@ -101,7 +102,7 @@ func (s *Storage) Store(song *playerStructs.Song) error {
 	return err
 }
 
-func (s *Storage) Remove(song *playerStructs.Song) error {
+func (s *Storage) Remove(song *playerStruct.Song) error {
 	q, args := removeQuery(song)
 	_, err := s.db.Exec(q, args...)
 	if err != nil {

@@ -2,9 +2,10 @@ package cache_test
 
 import (
 	"lrcsnc/internal/cache"
+	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/global"
-	playerStructs "lrcsnc/internal/pkg/structs/player"
 	"lrcsnc/internal/pkg/types"
+	playerStruct "lrcsnc/internal/player/struct"
 	"os"
 	"testing"
 )
@@ -22,13 +23,15 @@ func TestStoreGetCycle(t *testing.T) {
 	defer cache.Close()
 
 	global.Config.C.Cache.StoreCondition.IfSynced = true
-	testSong := playerStructs.Song{
-		Title:    "Is This A Test?",
-		Artists:  []string{"Endg4me_"},
-		Album:    "lrcsnc",
-		Duration: 12.12,
-		LyricsData: playerStructs.LyricsData{
-			Lyrics: []playerStructs.Lyric{
+	testSong := playerStruct.Song{
+		Metadata: playerStruct.SongMetadata{
+			Title:    "Is This A Test?",
+			Artists:  []string{"Endg4me_"},
+			Album:    "lrcsnc",
+			Duration: 12.12,
+		},
+		LyricsData: lyricStruct.LyricsData{
+			Lyrics: []lyricStruct.Lyric{
 				{Timing: 4.12, Text: "Pam-pam-pampararam"},
 				{Timing: 7.54, Text: "Pam-pam-pam-param-pamparam"},
 			},

@@ -4,10 +4,9 @@ import (
 	"lrcsnc/internal/output/pkg/event"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
+	"lrcsnc/internal/pkg/types"
 	"os"
 	"time"
-
-	"github.com/Endg4meZer0/go-mpris"
 )
 
 func (c *client) handleActiveLyricChanged(d event.EventTypeActiveLyricChangedData) {
@@ -27,7 +26,7 @@ func (c *client) handleActiveLyricChanged(d event.EventTypeActiveLyricChangedDat
 
 	if c.conn != nil {
 		global.Player.M.Lock()
-		global.Player.P.Position = d.Lyric.Timing
+		global.Player.P.LastDetectedPosition = d.Lyric.Timing
 		global.Player.M.Unlock()
 	}
 
@@ -37,10 +36,10 @@ func (c *client) handleActiveLyricChanged(d event.EventTypeActiveLyricChangedDat
 func (c *client) handleSongChanged(d event.EventTypeSongChangedData) {
 	if c.conn != nil {
 		global.Player.M.Lock()
-		global.Player.P.Song.Title = d.Title
-		global.Player.P.Song.Artists = d.Artists
-		global.Player.P.Song.Album = d.Album
-		global.Player.P.Song.Duration = d.Duration
+		global.Player.P.Song.Metadata.Title = d.Title
+		global.Player.P.Song.Metadata.Artists = d.Artists
+		global.Player.P.Song.Metadata.Album = d.Album
+		global.Player.P.Song.Metadata.Duration = d.Duration
 		global.Player.M.Unlock()
 	}
 }
@@ -60,7 +59,7 @@ func (c *client) handlePlaybackStatusChanged(d event.EventTypePlaybackStatusChan
 		global.Player.M.Unlock()
 	}
 
-	if global.Player.P.PlaybackStatus == mpris.PlaybackStopped {
+	if global.Player.P.PlaybackStatus == types.PlaybackStatusStopped {
 		c.pendingText = ""
 	}
 

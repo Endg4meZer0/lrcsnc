@@ -3,7 +3,7 @@ package global
 import (
 	"sync"
 
-	configStruct "lrcsnc/internal/pkg/structs/config"
+	configStruct "lrcsnc/internal/config/struct"
 )
 
 var Config = struct {

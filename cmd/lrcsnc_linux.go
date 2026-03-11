@@ -1,3 +1,5 @@
+//go:build linux
+
 package cmd
 
 import (
@@ -7,11 +9,12 @@ import (
 
 	"lrcsnc/internal/cache"
 	"lrcsnc/internal/config"
-	"lrcsnc/internal/mpris"
 	"lrcsnc/internal/output/client"
 	"lrcsnc/internal/output/server"
 	"lrcsnc/internal/pkg/global"
 	"lrcsnc/internal/pkg/log"
+	"lrcsnc/internal/player"
+	"lrcsnc/internal/player/controllers/mpris"
 	"lrcsnc/internal/setup"
 	"lrcsnc/internal/sync"
 )
@@ -21,6 +24,9 @@ func Start() {
 	setup.Setup()
 	// ...and check for dependencies
 	setup.CheckDependencies()
+
+	// A Linux build sets the player controller to MPRIS
+	player.Controller = mpris.Controller
 
 	// Start the USR1 signal listener for config updates
 	// TODO: replace with live file watcher
@@ -54,11 +60,11 @@ func Start() {
 		sync.Start()
 
 		// Initialize the player listener session
-		err := mpris.Connect()
+		err := player.Controller.Connect()
 		if err != nil {
-			log.Fatal("cmd", "Error when configuring MPRIS. Check logs for more info.")
+			log.Fatal("cmd", "Error when configuring player controller. Check logs for more info.")
 		}
-		defer mpris.Disconnect()
+		defer player.Controller.Disconnect()
 	}
 
 	// Start the USR2 signal listener for cache removal
