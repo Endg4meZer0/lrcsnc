@@ -5,7 +5,8 @@ go 1.23.3
 toolchain go1.24.2
 
 require (
-	github.com/Endg4meZer0/go-mpris v1.0.5
+	github.com/Endg4meZer0/go-mpris v1.0.6
+	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
 	github.com/godbus/dbus/v5 v5.1.0
 	github.com/huandu/go-sqlbuilder v1.39.1
 	github.com/jessevdk/go-flags v1.6.1

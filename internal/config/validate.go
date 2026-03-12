@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	configStruct "lrcsnc/internal/config/struct"
+	"lrcsnc/internal/pkg/types"
 )
 
 type ValidationError struct {
@@ -43,7 +44,7 @@ func Validate(c *configStruct.Config) (errs ValidationErrors) {
 	}
 
 	// Check whether lrclib is set as the lyrics provider
-	if c.Lyrics.Provider != "lrclib" {
+	if c.Lyrics.Provider != types.LyricsProviderLrclib && c.Lyrics.Provider != types.LyricsProviderLocal {
 		errs = append(errs, ValidationError{
 			Path:    "lyrics/lyrics-provider",
 			Message: fmt.Sprintf("'%s' is not a valid value. Allowed values are 'lrclib' (sure hope there will be more in the future)", c.Lyrics.Provider),

@@ -2,10 +2,11 @@ package types
 
 // LyricsProviderType sets which lyrics provider to use.
 //
-// Possible values: "lrclib".
+// Possible values: "local", "lrclib".
 type LyricsProviderType string
 
 const (
+	LyricsProviderLocal  LyricsProviderType = "local"
 	LyricsProviderLrclib LyricsProviderType = "lrclib"
 )
 

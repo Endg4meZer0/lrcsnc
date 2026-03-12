@@ -1,8 +1,10 @@
-github.com/Endg4meZer0/go-mpris v1.0.5 h1:a3FUGD/h3tQAFlcl/YH4TVwtI/NVm4UJAGMEyaKai7I=
-github.com/Endg4meZer0/go-mpris v1.0.5/go.mod h1:eh//AAqSR5XF4G2mAKe9NrSp5sH8G6f3RnYzbupi8tU=
+github.com/Endg4meZer0/go-mpris v1.0.6 h1:nOjPwJ2NI5VjjG5WOwPJBIw6G2ESZ7tGNZ3wY9xuhw4=
+github.com/Endg4meZer0/go-mpris v1.0.6/go.mod h1:eh//AAqSR5XF4G2mAKe9NrSp5sH8G6f3RnYzbupi8tU=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8 h1:OtSeLS5y0Uy01jaKK4mA/WVIYtpzVm63vLVAPzJXigg=
+github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8/go.mod h1:apkPC/CR3s48O2D7Y++n1XWEpgPNNCjXYga3PPbJe2E=
 github.com/godbus/dbus/v5 v5.0.3/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
 github.com/godbus/dbus/v5 v5.1.0 h1:4KLkAxT3aOY8Li4FRJe/KvhoNFFxo0m6fNuFUO8QJUk=
 github.com/godbus/dbus/v5 v5.1.0/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=

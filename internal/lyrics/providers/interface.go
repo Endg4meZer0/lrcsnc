@@ -1,6 +1,7 @@
 package providers
 
 import (
+	"lrcsnc/internal/lyrics/providers/local"
 	lrclib "lrcsnc/internal/lyrics/providers/lrclib"
 
 	lyricStruct "lrcsnc/internal/lyrics/struct"
@@ -14,5 +15,6 @@ type Provider interface {
 }
 
 var Providers = map[types.LyricsProviderType]Provider{
+	types.LyricsProviderLocal:  local.Provider{},
 	types.LyricsProviderLrclib: lrclib.Provider{},
 }
