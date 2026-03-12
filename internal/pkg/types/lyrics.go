@@ -1,5 +1,23 @@
 package types
 
+type LyricsFormat string
+
+const (
+	LyricsFormatLrcPlain  = "lrc-plain"
+	LyricsFormatLrcSynced = "lrc-synced"
+)
+
+func (lf LyricsFormat) ToLyricsState() LyricsState {
+	switch lf {
+	case LyricsFormatLrcPlain:
+		return LyricsStatePlain
+	case LyricsFormatLrcSynced:
+		return LyricsStateSynced
+	default:
+		return LyricsStateUnknown
+	}
+}
+
 type LyricsState byte
 
 const (

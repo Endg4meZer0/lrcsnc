@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	errs "lrcsnc/internal/lyrics/errors"
-	"lrcsnc/internal/lyrics/formats/lrc"
+	"lrcsnc/internal/lyrics/formats"
 	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/errors"
 	"lrcsnc/internal/pkg/types"
@@ -70,12 +70,12 @@ func (resp LrcLibResponse) toLyricsData() (out lyricStruct.LyricsData) {
 	}
 
 	if resp.PlainLyrics != "" && resp.SyncedLyrics == "" {
-		out.Lyrics = lrc.ConvertPlain(resp.PlainLyrics)
+		out.Lyrics = formats.Formats[types.LyricsFormatLrcPlain].Convert(resp.PlainLyrics)
 		out.LyricsState = types.LyricsStatePlain
 		return
 	}
 
-	out.Lyrics = lrc.ConvertSynced(resp.SyncedLyrics)
+	out.Lyrics = formats.Formats[types.LyricsFormatLrcSynced].Convert(resp.PlainLyrics)
 	out.LyricsState = types.LyricsStateSynced
 
 	return

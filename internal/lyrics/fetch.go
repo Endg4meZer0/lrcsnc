@@ -36,7 +36,7 @@ func Fetch() (lyricStruct.LyricsData, error) {
 		}
 	}
 
-	log.Debug("lyrics/fetch", fmt.Sprintf("Moving to the online part; using %v", global.Config.C.Lyrics.Provider))
+	log.Debug("lyrics/fetch", fmt.Sprintf("Moving to the providers part; using %v", global.Config.C.Lyrics.Provider))
 
 	go server.ReceiveEvent(event.Event{
 		Type: event.EventTypeLyricsStateChanged,
@@ -56,7 +56,7 @@ func Fetch() (lyricStruct.LyricsData, error) {
 		return res, err
 	}
 
-	log.Debug("lyrics/fetch", "Lyrics were successfully fetched from online")
+	log.Debug("lyrics/fetch", "Lyrics were successfully fetched")
 
 	if global.Config.C.Cache.Enabled && global.Config.C.Cache.StoreCondition.IsEnabledFor(res.LyricsState) {
 		song.LyricsData = res

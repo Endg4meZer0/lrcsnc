@@ -11,28 +11,9 @@ import (
 
 var timingRegexp = regexp.MustCompile(`(\[[0-9]{2}:[0-9]{2}.[0-9]{1,3}])+`)
 
-// ConvertPlain is pretty much self-explanatory.
-//
-// It just splits the provided data string by the new line symbol,
-// then constructs a Lyrics object out of that.
-func ConvertPlain(data string) lyricStruct.Lyrics {
-	lines := strings.Split(data, "\n")
-	out := make(lyricStruct.Lyrics, 0, len(lines))
-	for _, lyric := range lines {
-		out = append(out, lyricStruct.Lyric{
-			Timing: 0,
-			Text:   strings.TrimSpace(lyric),
-		})
-	}
-	return out
-}
+type LyricsFormatLrcSynced struct{}
 
-// ConvertSynced is self-explanatory as well.
-//
-// It splits the provided data string by the new line symbol,
-// then tries to use known LRC practices for synced lyrics
-// to construct the Lyrics object out of that.
-func ConvertSynced(data string) lyricStruct.Lyrics {
+func (LyricsFormatLrcSynced) Convert(data string) lyricStruct.Lyrics {
 	hasRepetitiveLyrics := false
 	lines := strings.Split(data, "\n")
 	startIndex := 0
