@@ -11,7 +11,7 @@ import (
 	playerStruct "lrcsnc/internal/player/struct"
 )
 
-func mprisMessageReceiver() {
+func messageReceiver() {
 	for msg := range signals.MessageChannel {
 		log.Debug("sync/mprisMessageReceiver", fmt.Sprintf("Received message: %v", msg))
 		switch msg.Type {
@@ -23,7 +23,7 @@ func mprisMessageReceiver() {
 				},
 			})
 			if global.Player.P.PlaybackStatus != types.PlaybackStatusStopped {
-				songChanged <- true
+				fetchLyrics()
 			}
 			go server.ReceiveEvent(event.Event{
 				Type: event.EventTypePlaybackStatusChanged,
@@ -33,8 +33,8 @@ func mprisMessageReceiver() {
 			})
 		case signals.SignalSeeked:
 			// On seeked signal we only update the position,
-			// and we're not sending any specific events
-			// to server...
+			//   and we're not sending any specific events
+			//   to server...
 			global.Player.M.Lock()
 			global.Player.P.LastDetectedPosition = msg.Data.(float64) / 1000 / 1000
 			global.Player.M.Unlock()
@@ -83,12 +83,12 @@ func mprisMessageReceiver() {
 			global.Player.P.Song.LyricsData.LyricsState = types.LyricsStateLoading
 			global.Player.M.Unlock()
 
-			// Send a signal that the song has changed and we need
-			// to fetch some new lyrics
-			songChanged <- true
+			// ...we need to fetch new lyrics
+			fetchLyrics()
 
-			// If the song changed (and we know it did), the position was probably set to 0
-			// and we can also ask for a position sync
+			// If the song changed (and we know it did),
+			//   the position is 99.99% not the same anymore,
+			//   so we can also ask for a position sync
 			AskForPositionSync()
 		}
 	}
