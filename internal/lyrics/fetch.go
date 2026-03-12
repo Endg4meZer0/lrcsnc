@@ -61,8 +61,8 @@ func Fetch() (lyricStruct.LyricsData, error) {
 			continue
 		}
 
-		if res.LyricsState == types.LyricsStateSynced {
-			log.Debug("lyrics/fetch", "Found synced lyrics; skipping other providers")
+		if res.LyricsState == types.LyricsStateSynced || res.LyricsState == types.LyricsStateInstrumental {
+			log.Debug("lyrics/fetch", "Found synced lyrics (or an instrumental tag); skipping other providers")
 			lyrData = res
 			providerFound = provider
 			break
