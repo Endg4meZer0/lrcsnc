@@ -75,7 +75,7 @@ func (resp LrcLibResponse) toLyricsData() (out lyricStruct.LyricsData) {
 		return
 	}
 
-	out.Lyrics = formats.Formats[types.LyricsFormatLrcSynced].Convert(resp.PlainLyrics)
+	out.Lyrics = formats.Formats[types.LyricsFormatLrcSynced].Convert(resp.SyncedLyrics)
 	out.LyricsState = types.LyricsStateSynced
 
 	return

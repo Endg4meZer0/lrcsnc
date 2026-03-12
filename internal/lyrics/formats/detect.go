@@ -11,6 +11,6 @@ func DetectFormat(data string) types.LyricsFormat {
 	if timingRegexp.MatchString(data) {
 		return types.LyricsFormatLrcSynced
 	} else {
-		return types.LyricsFormatLrcSynced
+		return types.LyricsFormatLrcPlain
 	}
 }
