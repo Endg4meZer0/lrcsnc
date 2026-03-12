@@ -43,13 +43,15 @@ func Validate(c *configStruct.Config) (errs ValidationErrors) {
 		})
 	}
 
-	// Check whether lrclib is set as the lyrics provider
-	if c.Lyrics.Provider != types.LyricsProviderLrclib && c.Lyrics.Provider != types.LyricsProviderLocal {
-		errs = append(errs, ValidationError{
-			Path:    "lyrics/lyrics-provider",
-			Message: fmt.Sprintf("'%s' is not a valid value. Allowed values are 'lrclib' (sure hope there will be more in the future)", c.Lyrics.Provider),
-			Fatal:   true,
-		})
+	// Check whether lyrics providers values are valid
+	for _, provider := range c.Lyrics.Providers {
+		if provider != types.LyricsProviderLrclib && provider != types.LyricsProviderLocal {
+			errs = append(errs, ValidationError{
+				Path:    "lyrics/lyrics-providers",
+				Message: fmt.Sprintf("'%s' is not a valid value. Allowed values are 'local' and 'lrclib'", provider),
+				Fatal:   true,
+			})
+		}
 	}
 
 	// Check if client's output's destination is writeable if it's not stdout

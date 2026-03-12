@@ -36,7 +36,7 @@ func Fetch() (lyricStruct.LyricsData, error) {
 		}
 	}
 
-	log.Debug("lyrics/fetch", fmt.Sprintf("Moving to the providers part; using %v", global.Config.C.Lyrics.Provider))
+	log.Debug("lyrics/fetch", "Trying to fetch lyrics using providers...")
 
 	go server.ReceiveEvent(event.Event{
 		Type: event.EventTypeLyricsStateChanged,
@@ -45,23 +45,45 @@ func Fetch() (lyricStruct.LyricsData, error) {
 		},
 	})
 
-	res, err := providers.Providers[global.Config.C.Lyrics.Provider].Get(song)
-	if err != nil {
-		if errors.Is(err, errs.NotFound) {
-			log.Debug("lyrics/fetch", "The lyrics, unfortunately, were not found")
-		} else {
-			log.Error("lyrics/fetch", fmt.Sprintf("Could not get the lyrics: %s", err))
+	var lyrData lyricStruct.LyricsData
+	lyrData.LyricsState = types.LyricsStateNotFound
+	var providerFound types.LyricsProviderType
+	for _, provider := range global.Config.C.Lyrics.Providers {
+		log.Debug("lyrics/fetch", fmt.Sprintf("Now using provider \"%v\"", provider))
+		res, err := providers.Providers[provider].Get(song)
+		if err != nil {
+			if errors.Is(err, errs.NotFound) {
+				log.Debug("lyrics/fetch", "The lyrics, unfortunately, were not found")
+			} else {
+				log.Error("lyrics/fetch", fmt.Sprintf("Could not get the lyrics: %s", err))
+			}
+
+			continue
 		}
 
-		return res, err
+		if res.LyricsState == types.LyricsStateSynced {
+			log.Debug("lyrics/fetch", "Found synced lyrics; skipping other providers")
+			lyrData = res
+			providerFound = provider
+			break
+		} else if res.LyricsState == types.LyricsStatePlain && lyrData.LyricsState != types.LyricsStatePlain {
+			log.Debug("lyrics/fetch", "Found plain lyrics; saving in case nothing else will be found")
+			lyrData = res
+			providerFound = provider
+		}
+	}
+	if lyrData.LyricsState == types.LyricsStateNotFound {
+		return lyrData, errs.NotFound
 	}
 
 	log.Debug("lyrics/fetch", "Lyrics were successfully fetched")
 
-	if global.Config.C.Cache.Enabled && global.Config.C.Cache.StoreCondition.IsEnabledFor(res.LyricsState) {
-		song.LyricsData = res
+	if global.Config.C.Cache.Enabled &&
+		global.Config.C.Cache.StoreCondition.IsEnabledFor(lyrData.LyricsState) &&
+		(providerFound != types.LyricsProviderLocal || providerFound == types.LyricsProviderLocal && global.Config.C.Lyrics.LocalProviderConfig.CacheInternally) {
+		song.LyricsData = lyrData
 		cache.StorageInstance.Store(&song)
 	}
 
-	return res, nil
+	return lyrData, nil
 }

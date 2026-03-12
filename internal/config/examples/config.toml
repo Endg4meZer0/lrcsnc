@@ -11,8 +11,15 @@ protocol = ""
 listen-at = ""
 
 [lyrics]
-provider = "lrclib"
+providers = ["local", "lrclib"]
 timing-offset = 0.0
+
+[lyrics.providers-local]
+try-embedded-first = false
+cache-internally = false
+
+[lyrics.providers-lrclib]
+enable-first-get-request = true
 
 [lyrics.romanization]
 korean = false
