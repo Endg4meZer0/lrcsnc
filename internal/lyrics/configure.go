@@ -1,9 +1,9 @@
 package lyrics
 
 import (
+	"lrcsnc/internal/lyrics/romanization"
 	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/log"
-	"lrcsnc/internal/romanization"
 )
 
 // Configure sets up the lyrics data by applying necessary configurations.

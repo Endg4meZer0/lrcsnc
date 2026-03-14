@@ -1,7 +1,7 @@
 package romanization
 
 import (
-	"lrcsnc/internal/romanization/langs"
+	"lrcsnc/internal/lyrics/romanization/langs"
 )
 
 type Romanizer interface {

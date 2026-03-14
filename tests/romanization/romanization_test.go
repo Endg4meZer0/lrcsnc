@@ -1,9 +1,9 @@
 package romanization_test
 
 import (
+	"lrcsnc/internal/lyrics/romanization"
 	lyricStruct "lrcsnc/internal/lyrics/struct"
 	"lrcsnc/internal/pkg/global"
-	"lrcsnc/internal/romanization"
 	"testing"
 )
 
