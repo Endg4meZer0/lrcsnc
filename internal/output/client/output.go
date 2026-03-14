@@ -47,7 +47,7 @@ func (c *client) write() {
 	global.Config.M.Unlock()
 
 	if !c.isOutputStd() {
-		if tempDestination, err := os.OpenFile(c.tempFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644); err == nil {
+		if tempDestination, err := os.OpenFile(c.tempFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o644); err == nil {
 			// Atomic copy (for better support of something like obs-text-pthread)
 			tempDestination.Truncate(0)
 			tempDestination.Seek(0, 0)

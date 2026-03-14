@@ -118,7 +118,7 @@ func Setup() {
 	// If lrcsnc is not in server mode, explicitly set the output file path for this app instance if the flag is set
 	if opts.ClientOutputFilePath != "" && !global.Config.C.Net.IsServer {
 		// We'll try to write to or create the file on the specified path first to ensure it is valid
-		if k, err := os.OpenFile(opts.ClientOutputFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644); err != nil {
+		if k, err := os.OpenFile(opts.ClientOutputFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o644); err != nil {
 			log.Error("setup", fmt.Sprintf("The provided output file path (%v) is invalid and will be ignored. Error: %v", opts.ClientOutputFilePath, err))
 		} else {
 			k.Close()
