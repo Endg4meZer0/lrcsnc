@@ -13,7 +13,7 @@ import (
 
 func messageReceiver() {
 	for msg := range signals.MessageChannel {
-		log.Debug("sync/mprisMessageReceiver", fmt.Sprintf("Received message: %v", msg))
+		log.Debug("sync/messageReceiver", fmt.Sprintf("Received message: %v", msg))
 		switch msg.Type {
 		case signals.SignalReady, signals.SignalPlayerChanged:
 			go server.ReceiveEvent(event.Event{
@@ -92,5 +92,5 @@ func messageReceiver() {
 			AskForPositionSync()
 		}
 	}
-	log.Error("sync/mprisMessageReceiver", "The MPRIS message channel was closed. What happened?")
+	log.Error("sync/messageReceiver", "The message channel was closed. What happened?")
 }
