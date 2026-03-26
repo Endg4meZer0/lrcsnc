@@ -1,6 +1,7 @@
 package lrclib
 
 import (
+	"os"
 	"slices"
 	"testing"
 
@@ -14,6 +15,10 @@ import (
 // TestGetLyrics tests the ability to get different kinds of
 // lyrics from LrcLib.
 func TestGetLyrics(t *testing.T) {
+	if os.Getenv("LRCSNC_SKIP_PROVIDERS_TESTS") != "" {
+		t.Skip("[tests/lyrics/providers/lrclib/get] Skipping test")
+	}
+
 	tests := []struct {
 		name  string
 		song  playerStruct.Song

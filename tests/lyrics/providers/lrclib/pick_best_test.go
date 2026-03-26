@@ -1,6 +1,7 @@
 package lrclib
 
 import (
+	"os"
 	"slices"
 	"testing"
 
@@ -15,6 +16,10 @@ import (
 // This is a very primitive test because it tests only one variation.
 // Maybe later will be more and this will turn into a proper test.
 func TestPickBestLyrics(t *testing.T) {
+	if os.Getenv("LRCSNC_SKIP_PROVIDERS_TESTS") != "" {
+		t.Skip("[tests/lyrics/providers/lrclib/pick-best] Skipping test")
+	}
+
 	song := playerStruct.Song{
 		Metadata: playerStruct.SongMetadata{
 			Title:        "Armageddon Eyes",
@@ -79,6 +84,6 @@ func TestPickBestLyrics(t *testing.T) {
 			return 1
 		}
 	}) != 0 {
-		t.Errorf("pickBest doesn't work as intended, please debug... err = %v", err)
+		t.Errorf("[tests/lyrics/providers/lrclib/pick-best] Something is wrong, maybe lyrics changed online? Err: %v", err)
 	}
 }
