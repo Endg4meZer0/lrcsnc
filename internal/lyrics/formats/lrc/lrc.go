@@ -10,6 +10,7 @@ import (
 )
 
 var timingRegexp = regexp.MustCompile(`(\[[0-9]{2}:[0-9]{2}.[0-9]{1,3}])+`)
+var subTimingRegexp = regexp.MustCompile(`(<[0-9]{2}:[0-9]{2}.[0-9]{1,3}>)+`)
 
 // ConvertPlain is pretty much self-explanatory.
 //
@@ -52,6 +53,7 @@ func ConvertSynced(data string) playerStructs.Lyrics {
 		for _, ts := range timings {
 			lyric = strings.Replace(lyric, ts, "", 1)
 		}
+		lyric = subTimingRegexp.ReplaceAllString(lyric, "")
 		lyric = strings.TrimSpace(lyric)
 
 		hasRepetitiveLyrics = hasRepetitiveLyrics || len(timings) > 1
