@@ -8,5 +8,6 @@ import (
 type Config struct {
 	Provider     types.LyricsProviderType `toml:"provider"`
 	TimingOffset float64                  `toml:"timing-offset"`
+	T2S          bool                     `toml:"t2s"`
 	Romanization romanization.Config      `toml:"romanization"`
 }
