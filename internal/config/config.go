@@ -3,7 +3,7 @@ package config
 import (
 	"errors"
 	"os"
-	"strings"
+	"path"
 
 	errs "lrcsnc/internal/config/errors"
 	configStruct "lrcsnc/internal/config/struct"
@@ -16,14 +16,18 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
+const (
+	configRelativePath = "lrcsnc/config.toml"
+	systemWidePath     = "/etc/lrcsnc/config.toml"
+)
+
 func Parse(configFile []byte) error {
 	var config configStruct.Config
 
 	if err := toml.Unmarshal(configFile, &config); err != nil {
 		var decodeErr *toml.DecodeError
 		if errors.As(err, &decodeErr) {
-			lines := strings.Join(strings.Split(decodeErr.String(), "\n"), "\n\t")
-			log.Error("config/Parse", "Error parsing the config file: \n\t"+lines)
+			log.Error("config/Parse", "Failed to parse the config file: \n"+decodeErr.String())
 			return errs.FileInvalid
 		}
 	}
@@ -54,7 +58,7 @@ func Parse(configFile []byte) error {
 
 func Read(path string) error {
 	if _, err := os.Stat(os.ExpandEnv(path)); os.IsNotExist(err) {
-		log.Error("config/Read", "Config file does not exist or is unreachable.")
+		log.Error("config/Read", "Config file is unreachable (maybe it doesn't exist?).")
 		return genericErrs.FileUnreachable
 	}
 
@@ -82,11 +86,11 @@ func ReadUserWide() error {
 		return err
 	}
 
-	return Read(userConfigDir + "/lrcsnc/config.toml")
+	return Read(path.Join(userConfigDir, configRelativePath))
 }
 
 func ReadSystemWide() error {
-	return Read("/etc/lrcsnc/config.toml")
+	return Read(systemWidePath)
 }
 
 func Update() {
